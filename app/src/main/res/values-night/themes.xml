@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Dekhi" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/dk_window_bg</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="colorPrimary">@color/dk_primary</item>
+        <item name="colorSecondary">@color/dk_secondary</item>
+        <item name="colorSurface">@color/dk_surface</item>
+        <item name="colorSurfaceVariant">@color/dk_surface_variant</item>
+        <item name="colorOnSurface">@color/dk_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/dk_on_surface_variant</item>
+        <item name="colorOutline">@color/dk_outline</item>
+
+        <!-- Material 3 text styles mapping -->
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Dekhi.HeadlineLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Dekhi.TitleMedium</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Dekhi.BodyMedium</item>
+    </style>
+</resources>

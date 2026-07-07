@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Dekhi</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_playlists">Playlists</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="search_hint">Search channels...</string>
+    <string name="import_playlist">Import Playlist</string>
+    <string name="playlist_name">Playlist Name</string>
+    <string name="playlist_url">M3U URL</string>
+    <string name="cancel">Cancel</string>
+    <string name="import_action">Import</string>
+
+    <string name="empty_home_title">No Playlists Yet</string>
+    <string name="empty_home_desc">Import an M3U playlist to start watching your favorite channels.</string>
+
+    <string name="recent_channels">Recently Watched</string>
+    <string name="all_channels">All Channels</string>
+    <string name="categories">Categories</string>
+    <string name="or">OR</string>
+    <string name="pick_m3u_file">Pick M3U File</string>
+    <string name="app_title">Dekhi</string>
+    <string name="collections">Collections</string>
+    <string name="recent">Recent</string>
+    <string name="no_streams_found">No streams found</string>
+    <string name="import_m3u">Import M3U</string>
+    <string name="live_tag">LIVE</string>
+</resources>
