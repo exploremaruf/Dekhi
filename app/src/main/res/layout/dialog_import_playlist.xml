@@ -4,19 +4,34 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="32dp"
+    android:background="@color/cinematic_surface">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Import Collection"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:layout_marginBottom="32dp"
+        android:textColor="@color/white" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Widget.Dekhi.TextInputLayout"
         android:hint="@string/playlist_name"
-        app:startIconDrawable="@android:drawable/ic_menu_edit">
+        app:startIconDrawable="@android:drawable/ic_menu_edit"
+        app:startIconTint="@color/cinematic_text_secondary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_playlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords" />
+            android:inputType="textCapWords"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:textColor="@color/white"
+            android:background="@color/transparent" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -24,15 +39,21 @@
         android:id="@+id/til_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
+        style="@style/Widget.Dekhi.TextInputLayout"
         android:hint="@string/playlist_url"
-        app:startIconDrawable="@android:drawable/ic_menu_share">
+        app:startIconDrawable="@android:drawable/ic_menu_share"
+        app:startIconTint="@color/cinematic_text_secondary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_playlist_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textUri" />
+            android:inputType="textUri"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:textColor="@color/white"
+            android:background="@color/transparent" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -40,18 +61,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="@string/or"
         android:textAppearance="?attr/textAppearanceLabelLarge"
-        android:textColor="@color/on_surface_variant" />
+        android:textColor="@color/cinematic_text_secondary" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_pick_file"
-        style="@style/Widget.Material3.Button.TonalButton"
+        style="@style/Widget.Dekhi.Button.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:text="@string/pick_m3u_file"
-        app:icon="@android:drawable/ic_menu_save" />
+        app:icon="@android:drawable/ic_menu_save"
+        app:iconTint="@color/white" />
 
 </LinearLayout>

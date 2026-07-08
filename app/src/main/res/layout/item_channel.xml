@@ -2,32 +2,34 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Dekhi.Card.Flat"
+    style="@style/Widget.Dekhi.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="4dp">
+    android:layout_marginHorizontal="24dp"
+    android:layout_marginVertical="8dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="16dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_channel_logo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@color/bg_light"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@color/cinematic_divider"
             android:scaleType="centerInside"
             android:src="@android:drawable/ic_menu_report_image"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small" />
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -36,20 +38,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold"
-                tools:text="HBO HD" />
+                android:textColor="@color/white"
+                tools:text="HBO Movies HD" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/live_tag"
+                android:layout_marginTop="8dp"
+                android:text="LIVE"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/cinematic_error"
+                android:textStyle="bold"
                 android:letterSpacing="0.1" />
 
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_media_play"
+            app:tint="@color/white"
+            android:alpha="0.4" />
 
     </LinearLayout>
 

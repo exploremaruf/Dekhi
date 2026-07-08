@@ -1,40 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Light Design Tokens -->
-    <color name="lt_window_bg">#F6F8FC</color>
-    <color name="lt_surface">#FFFFFF</color>
-    <color name="lt_surface_variant">#F1F5F9</color>
-    <color name="lt_primary">#2563EB</color>
-    <color name="lt_secondary">#06B6D4</color>
-    <color name="lt_on_surface">#111827</color>
-    <color name="lt_on_surface_variant">#64748B</color>
-    <color name="lt_outline">#E2E8F0</color>
+    <!-- Cinematic Dark Theme - Deep Black & White System -->
+    <color name="cinematic_background">#000000</color>
+    <color name="cinematic_surface">#1C1C1E</color>
+    <color name="cinematic_text_primary">#FFFFFF</color>
+    <color name="cinematic_text_secondary">#A1A1AA</color>
+    <color name="cinematic_accent">#FFFFFF</color>
 
-    <!-- Dark Design Tokens -->
-    <color name="dk_window_bg">#0B0F14</color>
-    <color name="dk_surface">#151A21</color>
-    <color name="dk_surface_variant">#1E2630</color>
-    <color name="dk_primary">#4F8CFF</color>
-    <color name="dk_secondary">#7C3AED</color>
-    <color name="dk_on_surface">#FFFFFF</color>
-    <color name="dk_on_surface_variant">#A7B0BE</color>
-    <color name="dk_outline">#29313D</color>
-
-    <!-- Design Token Aliases (Ensures compatibility with all XML layouts) -->
-    <color name="background">#0B0F14</color>
-    <color name="surface">#151A21</color>
-    <color name="primary">#4F8CFF</color>
-    <color name="on_surface">#FFFFFF</color>
-    <color name="on_surface_variant">#A7B0BE</color>
-    <color name="text_high_emphasis">#FFFFFF</color>
-    <color name="text_medium_emphasis">#A7B0BE</color>
-    <color name="text_low_emphasis">#64748B</color>
-    <color name="overlay_minimal">#CC000000</color>
-    <color name="divider_subtle">#29313D</color>
-    <color name="bg_light">#F6F8FC</color>
+    <!-- Semantic Colors -->
+    <color name="cinematic_error">#FF453A</color>
+    <color name="cinematic_success">#30D158</color>
+    <color name="cinematic_divider">#2C2C2E</color>
 
     <!-- Shared Utils -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
+    <color name="glass_overlay">#801C1C1E</color>
+    <color name="glass_overlay_light">#4DFFFFFF</color>
 </resources>

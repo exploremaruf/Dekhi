@@ -14,9 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dekhi.dekhi.R;
 import com.dekhi.dekhi.data.entity.Playlist;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class PlaylistAdapter extends ListAdapter<Playlist, PlaylistAdapter.ViewHolder> {
 
     private final OnPlaylistClickListener listener;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
 
     public PlaylistAdapter(OnPlaylistClickListener listener) {
         super(DIFF_CALLBACK);
@@ -31,7 +36,9 @@ public class PlaylistAdapter extends ListAdapter<Playlist, PlaylistAdapter.ViewH
 
         @Override
         public boolean areContentsTheSame(@NonNull Playlist oldItem, @NonNull Playlist newItem) {
-            return oldItem.getName().equals(newItem.getName()) && oldItem.getUrl().equals(newItem.getUrl());
+            return oldItem.getName().equals(newItem.getName()) && 
+                   oldItem.getChannelCount() == newItem.getChannelCount() &&
+                   oldItem.getGroupCount() == newItem.getGroupCount();
         }
     };
 
@@ -47,25 +54,25 @@ public class PlaylistAdapter extends ListAdapter<Playlist, PlaylistAdapter.ViewH
         Playlist playlist = getItem(position);
         holder.tvName.setText(playlist.getName());
         
-        String snippet = playlist.getChannelPreviewSnippet();
-        if (snippet != null && !snippet.isEmpty()) {
-            holder.tvUrl.setText(snippet);
-        } else {
-            holder.tvUrl.setText(playlist.getUrl());
-        }
+        String meta = playlist.getChannelCount() + " Channels • " + playlist.getGroupCount() + " Groups";
+        holder.tvMeta.setText(meta);
+
+        String updated = "Last updated: " + dateFormat.format(new Date(playlist.getLastImported()));
+        holder.tvUpdated.setText(updated);
 
         holder.itemView.setOnClickListener(v -> listener.onPlaylistClick(playlist));
         holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(playlist));
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvUrl;
+        TextView tvName, tvMeta, tvUpdated;
         ImageButton btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tv_playlist_name);
-            tvUrl = itemView.findViewById(R.id.tv_playlist_url);
+            tvMeta = itemView.findViewById(R.id.tv_playlist_meta);
+            tvUpdated = itemView.findViewById(R.id.tv_playlist_updated);
             btnDelete = itemView.findViewById(R.id.btn_delete);
         }
     }

@@ -81,6 +81,17 @@ public class ChannelsFragment extends Fragment {
         RecyclerView rvCategories = view.findViewById(R.id.rv_categories);
         rvCategories.setAdapter(categoryAdapter);
 
+        android.widget.EditText etSearch = view.findViewById(R.id.et_search_channels);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    filterChannelsBySearch(s.toString());
+                }
+                @Override public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
+
         viewModel.getChannelsForPlaylist(playlistId).observe(getViewLifecycleOwner(), channels -> {
             allChannels = channels;
             adapter.submitList(channels);
@@ -89,6 +100,22 @@ public class ChannelsFragment extends Fragment {
         viewModel.getCategories(playlistId).observe(getViewLifecycleOwner(), categories -> {
             categoryAdapter.setCategories(categories);
         });
+    }
+
+    private void filterChannelsBySearch(String query) {
+        if (query.isEmpty()) {
+            adapter.submitList(allChannels);
+        } else {
+            java.util.List<com.dekhi.dekhi.data.entity.Channel> filtered = new java.util.ArrayList<>();
+            String lowerQuery = query.toLowerCase();
+            for (com.dekhi.dekhi.data.entity.Channel c : allChannels) {
+                if (c.getName().toLowerCase().contains(lowerQuery) || 
+                    (c.getCategory() != null && c.getCategory().toLowerCase().contains(lowerQuery))) {
+                    filtered.add(c);
+                }
+            }
+            adapter.submitList(filtered);
+        }
     }
 
     private void filterChannels(String category) {

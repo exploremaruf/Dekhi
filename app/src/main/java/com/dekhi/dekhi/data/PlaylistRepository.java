@@ -49,8 +49,16 @@ public class PlaylistRepository {
         return channelDao.getCategories(playlistId);
     }
 
+    public LiveData<List<String>> getAllCategories() {
+        return channelDao.getAllCategories();
+    }
+
     public LiveData<List<Channel>> searchChannels(String query) {
         return channelDao.searchChannels("%" + query + "%");
+    }
+
+    public LiveData<List<Playlist>> searchPlaylists(String query) {
+        return playlistDao.searchPlaylists("%" + query + "%");
     }
 
     public LiveData<List<Channel>> getFavorites() {
@@ -116,6 +124,8 @@ public class PlaylistRepository {
                 // 2. Insert Playlist into DB with snippet
                 Playlist playlist = new Playlist(name, trimmedUrl, System.currentTimeMillis());
                 playlist.setChannelPreviewSnippet(result.previewSnippet);
+                playlist.setChannelCount(result.channels.size());
+                playlist.setGroupCount(result.groupCount);
                 long playlistId = playlistDao.insert(playlist);
 
                 // 3. Update channel list with the real playlist ID

@@ -1,45 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/background">
+    android:background="@color/cinematic_background"
+    android:clipToPadding="false"
+    android:paddingBottom="100dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nav_settings"
-        android:textAppearance="?attr/textAppearanceHeadlineMedium"
-        android:textColor="@color/on_surface" />
-
-    <com.google.android.material.divider.MaterialDivider
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Dark Mode"
-        android:checked="true"
-        android:enabled="false" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nav_settings"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="@color/white" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="About Dekhi"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
-        android:textColor="@color/primary" />
+        <!-- Appearance -->
+        <TextView
+            style="@style/SettingsHeader"
+            android:text="Appearance" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Version 1.0.0\nPremium IPTV Player"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="@color/on_surface_variant" />
+        <com.google.android.material.card.MaterialCardView style="@style/SettingsCard">
+            <LinearLayout style="@style/SettingsContainer">
+                <TextView android:id="@+id/setting_theme" style="@style/SettingsItem" android:text="Theme" />
+                <TextView android:id="@+id/setting_accent" style="@style/SettingsItem" android:text="Accent Style" />
+                <TextView android:id="@+id/setting_dynamic" style="@style/SettingsItem" android:text="Dynamic Colors" />
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/setting_amoled"
+                    style="@style/SettingsSwitch"
+                    android:text="AMOLED Mode" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+        <!-- Playback -->
+        <TextView
+            style="@style/SettingsHeader"
+            android:text="Playback" />
+
+        <com.google.android.material.card.MaterialCardView style="@style/SettingsCard">
+            <LinearLayout style="@style/SettingsContainer">
+                <TextView android:id="@+id/setting_player" style="@style/SettingsItem" android:text="Default Player" />
+                <TextView android:id="@+id/setting_resume" style="@style/SettingsItem" android:text="Auto Resume" />
+                <TextView android:id="@+id/setting_hw" style="@style/SettingsItem" android:text="Hardware Acceleration" />
+                <TextView android:id="@+id/setting_buffer" style="@style/SettingsItem" android:text="Playback Buffer" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Playlist -->
+        <TextView
+            style="@style/SettingsHeader"
+            android:text="Playlist" />
+
+        <com.google.android.material.card.MaterialCardView style="@style/SettingsCard">
+            <LinearLayout style="@style/SettingsContainer">
+                <TextView android:id="@+id/setting_import" style="@style/SettingsItem" android:text="Import Playlist" />
+                <TextView android:id="@+id/setting_refresh" style="@style/SettingsItem" android:text="Refresh All Playlists" />
+                <TextView android:id="@+id/setting_auto_update" style="@style/SettingsItem" android:text="Auto Update" />
+                <TextView android:id="@+id/setting_clear_playlist_cache" style="@style/SettingsItem" android:text="Clear Cache" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- History -->
+        <TextView
+            style="@style/SettingsHeader"
+            android:text="History" />
+
+        <com.google.android.material.card.MaterialCardView style="@style/SettingsCard">
+            <LinearLayout style="@style/SettingsContainer">
+                <TextView android:id="@+id/setting_continue_watching" style="@style/SettingsItem" android:text="Continue Watching" />
+                <TextView android:id="@+id/setting_recent_opened" style="@style/SettingsItem" android:text="Recently Opened" />
+                <TextView android:id="@+id/setting_clear_history" style="@style/SettingsItem" android:text="Clear Watch History" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- About -->
+        <TextView
+            style="@style/SettingsHeader"
+            android:text="About" />
+
+        <com.google.android.material.card.MaterialCardView style="@style/SettingsCard">
+            <LinearLayout style="@style/SettingsContainer">
+                <TextView android:id="@+id/setting_version" style="@style/SettingsItem" android:text="Version 1.0.0" />
+                <TextView android:id="@+id/setting_privacy" style="@style/SettingsItem" android:text="Privacy Policy" />
+                <TextView android:id="@+id/setting_terms" style="@style/SettingsItem" android:text="Terms of Service" />
+                <TextView android:id="@+id/setting_licenses" style="@style/SettingsItem" android:text="Open Source Licenses" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

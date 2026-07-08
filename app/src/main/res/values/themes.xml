@@ -1,57 +1,153 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Dekhi" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowBackground">@color/lt_window_bg</item>
-        <item name="android:navigationBarColor">@color/transparent</item>
-        <item name="android:statusBarColor">@color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+    <!-- Dekhi Cinematic Premium Design System -->
+    <style name="Theme.Dekhi" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Core Colors -->
+        <item name="android:windowBackground">@color/cinematic_background</item>
+        <item name="android:navigationBarColor">@color/cinematic_background</item>
+        <item name="android:statusBarColor">@color/cinematic_background</item>
+        <item name="android:windowLightStatusBar">false</item>
 
-        <item name="colorPrimary">@color/lt_primary</item>
-        <item name="colorSecondary">@color/lt_secondary</item>
-        <item name="colorSurface">@color/lt_surface</item>
-        <item name="colorSurfaceVariant">@color/lt_surface_variant</item>
-        <item name="colorOnSurface">@color/lt_on_surface</item>
-        <item name="colorOnSurfaceVariant">@color/lt_on_surface_variant</item>
-        <item name="colorOutline">@color/lt_outline</item>
+        <item name="colorPrimary">@color/cinematic_accent</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/cinematic_surface</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
 
-        <!-- Material 3 text styles mapping -->
-        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Dekhi.HeadlineLarge</item>
-        <item name="textAppearanceTitleMedium">@style/TextAppearance.Dekhi.TitleMedium</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.Dekhi.BodyMedium</item>
+        <item name="colorSecondary">@color/cinematic_text_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="colorSurface">@color/cinematic_surface</item>
+        <item name="colorOnSurface">@color/cinematic_text_primary</item>
+        <item name="colorSurfaceVariant">@color/cinematic_surface</item>
+        <item name="colorOnSurfaceVariant">@color/cinematic_text_secondary</item>
+
+        <item name="colorOutline">@color/cinematic_divider</item>
+        <item name="colorError">@color/cinematic_error</item>
+
+        <!-- Typography Mapping -->
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Dekhi.HeroTitle</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Dekhi.HeroTitle</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Dekhi.SectionTitle</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Dekhi.Body</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Dekhi.Caption</item>
+
+        <!-- Component Styles -->
+        <item name="materialCardViewStyle">@style/Widget.Dekhi.Card</item>
+        <item name="materialButtonStyle">@style/Widget.Dekhi.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.Dekhi.TextInputLayout</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/lt_window_bg</item>
+        <item name="windowSplashScreenBackground">@color/cinematic_background</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
         <item name="postSplashScreenTheme">@style/Theme.Dekhi</item>
     </style>
 
-    <!-- Typography Design Tokens -->
-    <style name="TextAppearance.Dekhi.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+    <!-- Typography Styles -->
+    <style name="TextAppearance.Dekhi.HeroTitle" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">@color/cinematic_text_primary</item>
+        <item name="android:letterSpacing">-0.03</item>
+        <item name="android:textSize">34sp</item>
     </style>
 
-    <style name="TextAppearance.Dekhi.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
+    <style name="TextAppearance.Dekhi.SectionTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/cinematic_text_primary</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
 
-    <style name="TextAppearance.Dekhi.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    <style name="TextAppearance.Dekhi.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/cinematic_text_primary</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
-    <!-- Compatibility Styles for Layouts -->
-    <style name="TextAppearance.Dekhi.Header" parent="TextAppearance.Dekhi.TitleMedium" />
-    <style name="TextAppearance.Dekhi.Headline" parent="TextAppearance.Dekhi.HeadlineLarge" />
-    <style name="TextAppearance.Dekhi.Title" parent="TextAppearance.Dekhi.TitleMedium" />
-    <style name="TextAppearance.Dekhi.Body" parent="TextAppearance.Dekhi.BodyMedium" />
+    <style name="TextAppearance.Dekhi.Caption" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/cinematic_text_secondary</item>
+        <item name="android:textSize">13sp</item>
+    </style>
 
-    <style name="Widget.Dekhi.Card.Flat" parent="Widget.Material3.CardView.Filled">
-        <item name="cardBackgroundColor">?attr/colorSurface</item>
-        <item name="cardCornerRadius">16dp</item>
+    <!-- Component Widgets -->
+    <style name="Widget.Dekhi.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/cinematic_surface</item>
+        <item name="cardCornerRadius">22dp</item>
         <item name="cardElevation">0dp</item>
-        <item name="strokeColor">?attr/colorOutline</item>
-        <item name="strokeWidth">1dp</item>
+        <item name="strokeWidth">0dp</item>
     </style>
+
+    <style name="Widget.Dekhi.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.Dekhi.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <style name="Widget.Dekhi.TextInputLayout" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxCornerRadiusTopStart">20dp</item>
+        <item name="boxCornerRadiusTopEnd">20dp</item>
+        <item name="boxCornerRadiusBottomStart">20dp</item>
+        <item name="boxCornerRadiusBottomEnd">20dp</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxBackgroundColor">@color/cinematic_surface</item>
+        <item name="hintEnabled">false</item>
+    </style>
+
+    <style name="Widget.Dekhi.Card.Flat" parent="Widget.Dekhi.Card" />
+
+    <!-- Settings Styles -->
+    <style name="SettingsHeader" parent="TextAppearance.Dekhi.Caption">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SettingsCard" parent="Widget.Dekhi.Card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="cardBackgroundColor">@color/cinematic_surface</item>
+        <item name="cardCornerRadius">16dp</item>
+    </style>
+
+    <style name="SettingsContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="SettingsItem" parent="TextAppearance.Dekhi.Body">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="SettingsSwitch" parent="SettingsItem">
+        <item name="android:background">@null</item>
+    </style>
+
 </resources>

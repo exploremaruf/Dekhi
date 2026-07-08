@@ -11,6 +11,8 @@ public class Playlist {
     private String url;
     private long lastImported;
     private String channelPreviewSnippet;
+    private int channelCount;
+    private int groupCount;
 
     public Playlist(String name, String url, long lastImported) {
         this.name = name;
@@ -28,4 +30,8 @@ public class Playlist {
     public void setLastImported(long lastImported) { this.lastImported = lastImported; }
     public String getChannelPreviewSnippet() { return channelPreviewSnippet; }
     public void setChannelPreviewSnippet(String channelPreviewSnippet) { this.channelPreviewSnippet = channelPreviewSnippet; }
+    public int getChannelCount() { return channelCount; }
+    public void setChannelCount(int channelCount) { this.channelCount = channelCount; }
+    public int getGroupCount() { return groupCount; }
+    public void setGroupCount(int groupCount) { this.groupCount = groupCount; }
 }

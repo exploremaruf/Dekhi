@@ -19,6 +19,7 @@ public class HomeViewModel extends AndroidViewModel {
     // Search state
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
     private final LiveData<List<Channel>> searchResults;
+    private final LiveData<List<Playlist>> playlistSearchResults;
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
@@ -31,11 +32,21 @@ public class HomeViewModel extends AndroidViewModel {
         // Reactive search logic: triggers repository search whenever searchQuery changes
         searchResults = Transformations.switchMap(searchQuery, query -> {
             if (query == null || query.isEmpty()) {
-                // Return an empty LiveData instead of null to avoid crashes
                 return new MutableLiveData<>();
             }
             return repository.searchChannels(query);
         });
+
+        playlistSearchResults = Transformations.switchMap(searchQuery, query -> {
+            if (query == null || query.isEmpty()) {
+                return repository.getAllPlaylists();
+            }
+            return repository.searchPlaylists(query);
+        });
+    }
+
+    public LiveData<List<Playlist>> getPlaylistSearchResults() {
+        return playlistSearchResults;
     }
 
     public LiveData<List<Playlist>> getAllPlaylists() {
@@ -56,6 +67,10 @@ public class HomeViewModel extends AndroidViewModel {
 
     public LiveData<List<String>> getCategories(long playlistId) {
         return repository.getCategories(playlistId);
+    }
+
+    public LiveData<List<String>> getAllCategories() {
+        return repository.getAllCategories();
     }
 
     public void setSearchQuery(String query) {

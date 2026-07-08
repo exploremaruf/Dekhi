@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:background="?android:attr/windowBackground"
+    android:background="@color/cinematic_background"
     tools:context=".MainActivity">
 
+    <!-- Cinematic Header -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
@@ -21,82 +21,84 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
             android:paddingBottom="16dp">
 
-            <TextView
-                android:id="@+id/tv_app_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dekhi"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginTop="16dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/tv_app_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dekhi"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="@color/cinematic_text_primary" />
+
+                <ImageButton
+                    android:id="@+id/btn_import_header"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_add"
+                    app:tint="@color/white" />
+            </RelativeLayout>
+
+            <!-- Search bar styled like a button or simple input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/search_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:boxBackgroundMode="filled"
-                app:boxBackgroundColor="?attr/colorSurfaceVariant"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                app:hintEnabled="false"
+                android:layout_marginTop="24dp"
+                style="@style/Widget.Dekhi.TextInputLayout"
                 app:startIconDrawable="@android:drawable/ic_menu_search"
-                app:startIconTint="?attr/colorOnSurfaceVariant">
+                app:startIconTint="@color/cinematic_text_secondary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_search"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/search_hint"
+                    android:hint="Search Channels..."
                     android:inputType="text"
-                    android:paddingVertical="12dp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textColorHint="?attr/colorOnSurfaceVariant" />
+                    android:textColor="@color/cinematic_text_primary"
+                    android:textColorHint="@color/cinematic_text_secondary"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:background="@color/transparent" />
 
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Content Area -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_import"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        android:layout_marginBottom="110dp"
-        app:srcCompat="@android:drawable/ic_input_add"
-        app:backgroundTint="?attr/colorPrimary"
-        app:tint="@color/white"
-        app:elevation="4dp"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
-
+    <!-- Minimalist Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="72dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="28dp"
-        android:background="@drawable/bg_floating_nav"
-        app:backgroundTint="?attr/colorSurfaceVariant"
+        android:background="@color/cinematic_background"
         app:elevation="0dp"
-        app:itemIconTint="?attr/colorPrimary"
-        app:itemRippleColor="?attr/colorPrimary"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
+
+    <!-- Thin Divider for Nav -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="72dp"
+        android:background="@color/cinematic_divider" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

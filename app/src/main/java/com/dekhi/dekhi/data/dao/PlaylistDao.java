@@ -27,4 +27,7 @@ public interface PlaylistDao {
 
     @Query("SELECT * FROM playlists WHERE id = :id")
     Playlist getPlaylistById(long id);
+
+    @Query("SELECT * FROM playlists WHERE name LIKE :query")
+    LiveData<List<Playlist>> searchPlaylists(String query);
 }

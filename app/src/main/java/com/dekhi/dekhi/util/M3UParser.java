@@ -19,10 +19,12 @@ public class M3UParser {
     public static class ParseResult {
         public final List<Channel> channels;
         public final String previewSnippet;
+        public final int groupCount;
 
-        public ParseResult(List<Channel> channels, String previewSnippet) {
+        public ParseResult(List<Channel> channels, String previewSnippet, int groupCount) {
             this.channels = channels;
             this.previewSnippet = previewSnippet;
+            this.groupCount = groupCount;
         }
     }
 
@@ -30,6 +32,7 @@ public class M3UParser {
         Log.d(TAG, "Parser: Starting native parse process...");
         List<Channel> channels = new ArrayList<>();
         List<String> firstNames = new ArrayList<>();
+        java.util.Set<String> groups = new java.util.HashSet<>();
         
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String firstLine = reader.readLine();
@@ -69,6 +72,7 @@ public class M3UParser {
                     if (!line.isEmpty()) {
                         String name = currentName.isEmpty() ? "Channel " + (channels.size() + 1) : currentName;
                         channels.add(new Channel(playlistId, name, currentLogo, line, currentGroup));
+                        groups.add(currentGroup);
                         
                         if (firstNames.size() < 5) firstNames.add(name);
                     }
@@ -86,7 +90,7 @@ public class M3UParser {
         }
         if (channels.size() > 5) snippet.append("...");
 
-        return new ParseResult(channels, snippet.toString());
+        return new ParseResult(channels, snippet.toString(), groups.size());
     }
 
     private static String extractAttribute(String line, String attribute) {
