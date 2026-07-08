@@ -1,6 +1,7 @@
 package com.dekhi.dekhi;
 
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                         .replace(R.id.nav_host_fragment, selectedFragment)
                         .commit();
+                
+                // We need to update visibility after commit, but commit is async.
+                // However, since we're replacing the fragment, we can just call it or wait for backstack if we used it.
+                // For bottom nav, we usually don't add to backstack.
+                findViewById(R.id.app_bar).setVisibility(
+                    (selectedFragment instanceof HomeFragment || 
+                     selectedFragment instanceof com.dekhi.dekhi.ui.playlist.PlaylistsFragment) ? View.VISIBLE : View.GONE
+                );
             }
             return true;
         });
@@ -70,6 +79,21 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.nav_host_fragment, new HomeFragment())
                     .commit();
+        }
+
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            updateAppBarVisibility();
+        });
+    }
+
+    private void updateAppBarVisibility() {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        View appBar = findViewById(R.id.app_bar);
+        if (appBar != null) {
+            boolean shouldShow = current instanceof HomeFragment || 
+                                 current instanceof com.dekhi.dekhi.ui.playlist.PlaylistsFragment ||
+                                 current instanceof com.dekhi.dekhi.ui.home.SearchFragment;
+            appBar.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
         }
     }
 

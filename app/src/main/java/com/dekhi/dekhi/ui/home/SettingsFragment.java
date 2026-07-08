@@ -9,10 +9,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.dekhi.dekhi.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsFragment extends Fragment {
+    private HomeViewModel viewModel;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -22,7 +26,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+        viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         setupClickListeners(view);
     }
 
@@ -36,13 +40,30 @@ public class SettingsFragment extends Fragment {
         view.findViewById(R.id.setting_resume).setOnClickListener(listener);
         view.findViewById(R.id.setting_hw).setOnClickListener(listener);
         view.findViewById(R.id.setting_buffer).setOnClickListener(listener);
-        view.findViewById(R.id.setting_import).setOnClickListener(listener);
+        view.findViewById(R.id.setting_import).setOnClickListener(v -> {
+            if (getActivity() != null) {
+                com.google.android.material.bottomnavigation.BottomNavigationView nav = getActivity().findViewById(R.id.bottom_navigation);
+                if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
+            }
+        });
         view.findViewById(R.id.setting_refresh).setOnClickListener(listener);
         view.findViewById(R.id.setting_auto_update).setOnClickListener(listener);
         view.findViewById(R.id.setting_clear_playlist_cache).setOnClickListener(listener);
         view.findViewById(R.id.setting_continue_watching).setOnClickListener(listener);
         view.findViewById(R.id.setting_recent_opened).setOnClickListener(listener);
-        view.findViewById(R.id.setting_clear_history).setOnClickListener(listener);
+        
+        view.findViewById(R.id.setting_clear_history).setOnClickListener(v -> {
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Clear History")
+                    .setMessage("Are you sure you want to clear your watch history?")
+                    .setPositiveButton("Clear", (dialog, which) -> {
+                        viewModel.clearHistory();
+                        Toast.makeText(requireContext(), "History cleared", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+        });
+
         view.findViewById(R.id.setting_privacy).setOnClickListener(listener);
         view.findViewById(R.id.setting_terms).setOnClickListener(listener);
         view.findViewById(R.id.setting_licenses).setOnClickListener(listener);

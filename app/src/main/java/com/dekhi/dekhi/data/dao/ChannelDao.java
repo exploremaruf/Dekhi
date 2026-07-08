@@ -45,4 +45,7 @@ public interface ChannelDao {
 
     @Query("DELETE FROM channels WHERE playlistId = :playlistId")
     void deleteByPlaylistId(long playlistId);
+
+    @Query("UPDATE channels SET lastWatched = 0")
+    void clearAllHistory();
 }

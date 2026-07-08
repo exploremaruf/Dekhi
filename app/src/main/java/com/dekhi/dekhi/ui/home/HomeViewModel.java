@@ -89,4 +89,8 @@ public class HomeViewModel extends AndroidViewModel {
     public void deletePlaylist(Playlist playlist) {
         repository.deletePlaylist(playlist);
     }
+
+    public void clearHistory() {
+        repository.clearHistory();
+    }
 }
