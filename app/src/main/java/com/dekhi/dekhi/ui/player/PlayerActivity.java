@@ -10,12 +10,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.Player;
@@ -26,11 +29,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.ui.PlayerView;
 
 import com.dekhi.dekhi.R;
-import com.dekhi.dekhi.data.AppDatabase;
 import com.dekhi.dekhi.data.entity.Channel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @OptIn(markerClass = UnstableApi.class)
 public class PlayerActivity extends AppCompatActivity {
@@ -50,10 +49,7 @@ public class PlayerActivity extends AppCompatActivity {
     private ImageButton btnNext, btnPrevious, btnBack, btnFavorite;
     private TextView tvTitle;
     
-    private long channelId;
-    private long playlistId;
-    private List<Channel> channelList = new ArrayList<>();
-    private int currentIndex = -1;
+    private PlayerViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,33 +57,77 @@ public class PlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_player);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        viewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
+
         playerView = findViewById(R.id.player_view);
         pbLoading = findViewById(R.id.pb_loading);
         tvGestureStatus = findViewById(R.id.tv_gesture_status);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        // Media3 PlayerView automatically inflates custom_exo_controls.xml if specified in XML.
-        // We find the sub-views directly from playerView to hook our custom logic.
+        playerView.setControllerVisibilityListener((PlayerView.ControllerVisibilityListener) visibility -> {
+            if (visibility == View.VISIBLE) {
+                showSystemUI();
+            } else {
+                hideSystemUI();
+            }
+        });
+
         btnNext = playerView.findViewById(R.id.btn_next);
         btnPrevious = playerView.findViewById(R.id.btn_previous);
         btnBack = playerView.findViewById(R.id.btn_back);
         btnFavorite = playerView.findViewById(R.id.btn_favorite);
         tvTitle = playerView.findViewById(R.id.tv_title);
 
-        channelId = getIntent().getLongExtra(EXTRA_CHANNEL_ID, -1);
-        playlistId = getIntent().getLongExtra(EXTRA_PLAYLIST_ID, -1);
-        String initialUrl = getIntent().getStringExtra(EXTRA_URL);
-        String initialName = getIntent().getStringExtra(EXTRA_NAME);
-
         setupExoPlayer();
         setupControlListeners();
         setupGestures();
-        
-        if (initialUrl != null) {
-            playStream(initialUrl, initialName);
+        setupObservers();
+        hideSystemUI();
+
+        if (savedInstanceState == null) {
+            long channelId = getIntent().getLongExtra(EXTRA_CHANNEL_ID, -1);
+            long playlistId = getIntent().getLongExtra(EXTRA_PLAYLIST_ID, -1);
+            String initialUrl = getIntent().getStringExtra(EXTRA_URL);
+            String initialName = getIntent().getStringExtra(EXTRA_NAME);
+            
+            if (playlistId != -1) {
+                viewModel.loadPlaylist(playlistId, channelId);
+            } else if (initialUrl != null) {
+                playStream(initialUrl, initialName);
+            }
         }
-        
-        loadPlaylistAndSetIndex();
+    }
+
+    private void hideSystemUI() {
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            controller.hide(WindowInsetsCompat.Type.systemBars());
+        }
+    }
+
+    private void showSystemUI() {
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.show(WindowInsetsCompat.Type.systemBars());
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus && (playerView == null || !playerView.isControllerFullyVisible())) {
+            hideSystemUI();
+        }
+    }
+
+    private void setupObservers() {
+        viewModel.getCurrentChannel().observe(this, channel -> {
+            if (channel != null) {
+                playStream(channel.getStreamUrl(), channel.getName());
+                updateFavoriteIcon(channel.isFavorite());
+            }
+        });
     }
 
     private void setupExoPlayer() {
@@ -115,21 +155,6 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-    private void playChannel(int index) {
-        if (channelList == null || channelList.isEmpty()) return;
-
-        if (index >= 0 && index < channelList.size()) {
-            currentIndex = index;
-            Channel channel = channelList.get(currentIndex);
-            channelId = channel.getId();
-            playStream(channel.getStreamUrl(), channel.getName());
-            updateFavoriteIcon();
-            updateHistory();
-        } else {
-            Toast.makeText(this, index < 0 ? "Beginning of playlist" : "End of playlist", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void playStream(String url, String name) {
         if (url == null) return;
         if (tvTitle != null) tvTitle.setText(name);
@@ -148,71 +173,22 @@ public class PlayerActivity extends AppCompatActivity {
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
         
         if (btnNext != null) {
-            btnNext.setOnClickListener(v -> playChannel(currentIndex + 1));
+            btnNext.setOnClickListener(v -> viewModel.playNext());
         }
 
         if (btnPrevious != null) {
-            btnPrevious.setOnClickListener(v -> playChannel(currentIndex - 1));
+            btnPrevious.setOnClickListener(v -> viewModel.playPrevious());
         }
 
         if (btnFavorite != null) {
-            btnFavorite.setOnClickListener(v -> toggleFavorite());
+            btnFavorite.setOnClickListener(v -> viewModel.toggleFavorite());
         }
     }
 
-    private void loadPlaylistAndSetIndex() {
-        if (playlistId != -1) {
-            new Thread(() -> {
-                AppDatabase db = AppDatabase.getInstance(this);
-                List<Channel> channels = db.channelDao().getChannelsByPlaylistSync(playlistId);
-                if (channels != null && !channels.isEmpty()) {
-                    channelList = channels;
-                    for (int i = 0; i < channelList.size(); i++) {
-                        if (channelList.get(i).getId() == channelId) {
-                            currentIndex = i;
-                            break;
-                        }
-                    }
-                    runOnUiThread(this::updateFavoriteIcon);
-                }
-            }).start();
+    private void updateFavoriteIcon(boolean isFavorite) {
+        if (btnFavorite != null) {
+            btnFavorite.setImageResource(isFavorite ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off);
         }
-    }
-
-    private void toggleFavorite() {
-        if (channelId == -1) return;
-        new Thread(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            Channel channel = db.channelDao().getChannelSync(channelId);
-            if (channel != null) {
-                channel.setFavorite(!channel.isFavorite());
-                db.channelDao().update(channel);
-                runOnUiThread(this::updateFavoriteIcon);
-            }
-        }).start();
-    }
-
-    private void updateFavoriteIcon() {
-        if (channelId == -1 || btnFavorite == null) return;
-        new Thread(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            Channel channel = db.channelDao().getChannelSync(channelId);
-            if (channel != null) {
-                runOnUiThread(() -> btnFavorite.setImageResource(channel.isFavorite() ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off));
-            }
-        }).start();
-    }
-
-    private void updateHistory() {
-        if (channelId == -1) return;
-        new Thread(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            Channel channel = db.channelDao().getChannelSync(channelId);
-            if (channel != null) {
-                channel.setLastWatched(System.currentTimeMillis());
-                db.channelDao().update(channel);
-            }
-        }).start();
     }
 
     private void showErrorDialog() {
@@ -220,7 +196,7 @@ public class PlayerActivity extends AppCompatActivity {
                 .setTitle("Playback Error")
                 .setMessage("Sorry, this channel is currently unreachable. Please try another channel!")
                 .setCancelable(false)
-                .setPositiveButton("NEXT CHANNEL", (dialog, which) -> playChannel(currentIndex + 1))
+                .setPositiveButton("NEXT CHANNEL", (dialog, which) -> viewModel.playNext())
                 .setNegativeButton("OK / BACK", (dialog, which) -> finish())
                 .show();
     }

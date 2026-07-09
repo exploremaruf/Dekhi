@@ -31,7 +31,9 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:textColor="@color/white"
-            android:background="@color/transparent" />
+            android:background="@color/transparent"
+
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 

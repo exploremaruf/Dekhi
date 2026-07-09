@@ -156,8 +156,34 @@ public class PlaylistRepository {
         executorService.execute(() -> playlistDao.delete(playlist));
     }
 
+    public void clearHistory() {
+        executorService.execute(channelDao::clearAllHistory);
+    }
+
+    public void updateChannel(Channel channel) {
+        executorService.execute(() -> channelDao.update(channel));
+    }
+
+    public void getChannelsByPlaylistSync(long playlistId, DataCallback<List<Channel>> callback) {
+        executorService.execute(() -> {
+            List<Channel> channels = channelDao.getChannelsByPlaylistSync(playlistId);
+            new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(channels));
+        });
+    }
+
+    public void getChannelSync(long channelId, DataCallback<Channel> callback) {
+        executorService.execute(() -> {
+            Channel channel = channelDao.getChannelSync(channelId);
+            new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(channel));
+        });
+    }
+
     public interface ImportCallback {
         void onSuccess();
         void onError(String message);
+    }
+
+    public interface DataCallback<T> {
+        void onDataLoaded(T data);
     }
 }

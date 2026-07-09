@@ -52,17 +52,42 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <!-- Center Play/Pause -->
-    <ImageButton
-        android:id="@+id/btn_play_pause"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+    <!-- Center Controls -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="12dp"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_media_pause"
-        app:tint="@color/white" />
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_previous"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_media_previous"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@id/exo_play_pause"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@android:drawable/ic_media_pause"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_media_next"
+            app:tint="@color/white" />
+    </LinearLayout>
 
     <!-- Bottom Bar (Progress) -->
     <LinearLayout

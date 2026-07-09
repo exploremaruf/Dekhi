@@ -43,8 +43,12 @@ public class SearchFragment extends Fragment {
         });
         rv.setAdapter(adapter);
 
+        View emptyState = view.findViewById(R.id.empty_search_state);
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), channels -> {
             adapter.submitList(channels);
+            if (emptyState != null) {
+                emptyState.setVisibility(channels == null || channels.isEmpty() ? View.VISIBLE : View.GONE);
+            }
         });
     }
 }

@@ -11,9 +11,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.dekhi.dekhi.R;
@@ -22,6 +24,8 @@ import com.dekhi.dekhi.ui.player.PlayerActivity;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
+import android.os.Handler;
+import android.os.Looper;
 
 public class HomeFragment extends Fragment {
 
@@ -29,6 +33,31 @@ public class HomeFragment extends Fragment {
     private ChannelAdapter recentAdapter;
     private ChannelAdapter favoritesAdapter;
     private com.dekhi.dekhi.ui.playlist.CategoryAdapter categoryAdapter;
+    private ViewPager2 heroViewPager;
+    private final Handler sliderHandler = new Handler(Looper.getMainLooper());
+    private final Runnable sliderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (heroViewPager != null) {
+                int nextItem = heroViewPager.getCurrentItem() + 1;
+                if (nextItem >= DEFAULT_IMAGES.length) {
+                    nextItem = 0;
+                }
+                heroViewPager.setCurrentItem(nextItem, true);
+                sliderHandler.postDelayed(this, 4000);
+            }
+        }
+    };
+
+    private static final int[] DEFAULT_IMAGES = {
+            R.drawable.defaultimage_one,
+            R.drawable.deafultimage_two,
+            R.drawable.deafultimage_three,
+            R.drawable.deafultimage_4,
+            R.drawable.defaultimage_5,
+            R.drawable.deafultimage_6,
+            R.drawable.deafultimage_7
+    };
 
     @Nullable
     @Override
@@ -41,6 +70,12 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
+        heroViewPager = view.findViewById(R.id.hero_viewpager);
+        if (heroViewPager != null) {
+            heroViewPager.setAdapter(new HeroAdapter(DEFAULT_IMAGES));
+            sliderHandler.postDelayed(sliderRunnable, 4000); // Increased to 4s for better readability
+        }
+
         setupRecyclerViews(view);
         setupObservers(view);
         
@@ -50,6 +85,12 @@ public class HomeFragment extends Fragment {
                 if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        sliderHandler.removeCallbacks(sliderRunnable);
     }
 
     private void setupRecyclerViews(View view) {
@@ -118,7 +159,6 @@ public class HomeFragment extends Fragment {
         TextView tvSubtitle = view.findViewById(R.id.tv_hero_subtitle);
         MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
         MaterialButton btnSecondary = view.findViewById(R.id.btn_hero_secondary);
-        ImageView ivPoster = view.findViewById(R.id.iv_hero_poster);
 
         if (recent != null && !recent.isEmpty()) {
             Channel mostRecent = recent.get(0);
@@ -132,9 +172,9 @@ public class HomeFragment extends Fragment {
             btnSecondary.setText("Open Channel");
             btnSecondary.setOnClickListener(v -> openPlayer(mostRecent));
 
-            if (mostRecent.getLogoUrl() != null && !mostRecent.getLogoUrl().isEmpty()) {
-                Glide.with(this).load(mostRecent.getLogoUrl()).placeholder(R.drawable.ic_launcher_background).into(ivPoster);
-            }
+            // When showing recent, we might want to hide the pager or update it
+            // For now, let's keep showing the pager background or maybe put the logo in it?
+            // Actually, let's just use the pager to show default images as background.
         } else {
             tvLabel.setText("Explore");
             tvTitle.setText("Explore IPTV Channels");
@@ -147,7 +187,6 @@ public class HomeFragment extends Fragment {
                 }
             });
             btnSecondary.setVisibility(View.GONE);
-            ivPoster.setImageResource(R.drawable.ic_launcher_background);
         }
     }
 }
