@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
         heroViewPager = view.findViewById(R.id.hero_viewpager);
         if (heroViewPager != null) {
             heroViewPager.setAdapter(new HeroAdapter(DEFAULT_IMAGES));
-            sliderHandler.postDelayed(sliderRunnable, 4000); // Increased to 4s for better readability
+            sliderHandler.postDelayed(sliderRunnable, 2000);
         }
 
         setupRecyclerViews(view);
@@ -158,7 +158,7 @@ public class HomeFragment extends Fragment {
         TextView tvTitle = view.findViewById(R.id.tv_hero_title);
         TextView tvSubtitle = view.findViewById(R.id.tv_hero_subtitle);
         MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
-        MaterialButton btnSecondary = view.findViewById(R.id.btn_hero_secondary);
+//        MaterialButton btnSecondary = view.findViewById(R.id.btn_hero_secondary);
 
         if (recent != null && !recent.isEmpty()) {
             Channel mostRecent = recent.get(0);
@@ -168,9 +168,9 @@ public class HomeFragment extends Fragment {
             btnPrimary.setText("Continue Watching");
             btnPrimary.setOnClickListener(v -> openPlayer(mostRecent));
             
-            btnSecondary.setVisibility(View.VISIBLE);
-            btnSecondary.setText("Open Channel");
-            btnSecondary.setOnClickListener(v -> openPlayer(mostRecent));
+//            btnSecondary.setVisibility(View.VISIBLE);
+//            btnSecondary.setText("Open Channel");
+//            btnSecondary.setOnClickListener(v -> openPlayer(mostRecent));
 
             // When showing recent, we might want to hide the pager or update it
             // For now, let's keep showing the pager background or maybe put the logo in it?
@@ -186,7 +186,7 @@ public class HomeFragment extends Fragment {
                     if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
                 }
             });
-            btnSecondary.setVisibility(View.GONE);
+//            btnSecondary.setVisibility(View.GONE);
         }
     }
 }
