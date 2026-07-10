@@ -33,7 +33,7 @@ public class SearchFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         RecyclerView rv = view.findViewById(R.id.rv_search_results);
-        adapter = new ChannelAdapter(R.layout.item_channel, channel -> {
+        adapter = new ChannelAdapter(R.layout.item_channel_src, channel -> {
             Intent intent = new Intent(requireContext(), PlayerActivity.class);
             intent.putExtra(PlayerActivity.EXTRA_URL, channel.getStreamUrl());
             intent.putExtra(PlayerActivity.EXTRA_NAME, channel.getName());
@@ -50,5 +50,16 @@ public class SearchFragment extends Fragment {
                 emptyState.setVisibility(channels == null || channels.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
+
+        android.widget.EditText etSearch = view.findViewById(R.id.et_search_results);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    viewModel.setSearchQuery(s.toString().trim());
+                }
+                @Override public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
     }
 }

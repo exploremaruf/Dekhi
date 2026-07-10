@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,10 +60,15 @@ public class ChannelsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        androidx.appcompat.widget.Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle(playlistName);
-        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
-        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
+        View btnBack = view.findViewById(R.id.btn_back_simple);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        }
+
+        TextView tvTitle = view.findViewById(R.id.tv_title_simple);
+        if (tvTitle != null) {
+            tvTitle.setText(playlistName);
+        }
 
         RecyclerView rv = view.findViewById(R.id.rv_channels);
         adapter = new ChannelAdapter(R.layout.item_channel, channel -> {

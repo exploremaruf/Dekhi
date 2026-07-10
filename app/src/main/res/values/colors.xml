@@ -10,12 +10,13 @@
     <!-- Semantic Colors -->
     <color name="cinematic_error">#FF453A</color>
     <color name="cinematic_success">#30D158</color>
+    <color name="cinematic_indicator">#1E88E5</color>
     <color name="cinematic_divider">#2C2C2E</color>
 
     <!-- Shared Utils -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
-    <color name="glass_overlay">#801C1C1E</color>
+    <color name="glass_overlay">#B91C1C1E</color>
     <color name="glass_overlay_light">#4DFFFFFF</color>
 </resources>

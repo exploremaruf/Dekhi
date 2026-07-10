@@ -6,6 +6,7 @@
         <item name="android:navigationBarColor">@color/cinematic_background</item>
         <item name="android:statusBarColor">@color/cinematic_background</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="colorSecondaryContainer">@color/cinematic_indicator</item>
 
         <item name="colorPrimary">@color/cinematic_accent</item>
         <item name="colorOnPrimary">@color/black</item>

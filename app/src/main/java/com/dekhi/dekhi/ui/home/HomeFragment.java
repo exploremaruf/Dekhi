@@ -15,9 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dekhi.dekhi.R;
 import com.dekhi.dekhi.data.entity.Channel;
 import com.dekhi.dekhi.ui.player.PlayerActivity;
@@ -33,31 +33,14 @@ public class HomeFragment extends Fragment {
     private ChannelAdapter recentAdapter;
     private ChannelAdapter favoritesAdapter;
     private com.dekhi.dekhi.ui.playlist.CategoryAdapter categoryAdapter;
-    private ViewPager2 heroViewPager;
-    private final Handler sliderHandler = new Handler(Looper.getMainLooper());
-    private final Runnable sliderRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (heroViewPager != null) {
-                int nextItem = heroViewPager.getCurrentItem() + 1;
-                if (nextItem >= DEFAULT_IMAGES.length) {
-                    nextItem = 0;
-                }
-                heroViewPager.setCurrentItem(nextItem, true);
-                sliderHandler.postDelayed(this, 4000);
-            }
-        }
-    };
-
-    private static final int[] DEFAULT_IMAGES = {
-            R.drawable.defaultimage_one,
-            R.drawable.deafultimage_two,
-            R.drawable.deafultimage_three,
-            R.drawable.deafultimage_4,
-            R.drawable.defaultimage_5,
-            R.drawable.deafultimage_6,
-            R.drawable.deafultimage_7
-    };
+    private ImageView heroBackground;
+    private EditText etSearchHome;
+    private android.content.SharedPreferences prefs;
+    private static final String PREF_LAST_CHANNEL_NAME = "last_channel_name";
+    private static final String PREF_LAST_CHANNEL_LOGO = "last_channel_logo";
+    private static final String PREF_LAST_CHANNEL_ID = "last_channel_id";
+    private static final String PREF_LAST_CHANNEL_URL = "last_channel_url";
+    private static final String PREF_LAST_PLAYLIST_ID = "last_playlist_id";
 
     @Nullable
     @Override
@@ -69,15 +52,14 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        prefs = requireContext().getSharedPreferences("dekhi_prefs", android.content.Context.MODE_PRIVATE);
 
-        heroViewPager = view.findViewById(R.id.hero_viewpager);
-        if (heroViewPager != null) {
-            heroViewPager.setAdapter(new HeroAdapter(DEFAULT_IMAGES));
-            sliderHandler.postDelayed(sliderRunnable, 2000);
-        }
+        heroBackground = view.findViewById(R.id.hero_image_background);
+        loadLastChannelFromPrefs(view);
 
         setupRecyclerViews(view);
         setupObservers(view);
+        setupHomeTools(view);
         
         view.findViewById(R.id.btn_import_empty).setOnClickListener(v -> {
             if (getActivity() != null) {
@@ -87,10 +69,44 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void setupHomeTools(View view) {
+        View fabImport = view.findViewById(R.id.fab_import);
+        if (fabImport != null) {
+            fabImport.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    com.google.android.material.bottomnavigation.BottomNavigationView nav = getActivity().findViewById(R.id.bottom_navigation);
+                    if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
+                }
+            });
+        }
+
+        etSearchHome = view.findViewById(R.id.et_search_home);
+        if (etSearchHome != null) {
+            etSearchHome.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    String query = s.toString().trim();
+                    viewModel.setSearchQuery(query);
+                    if (!query.isEmpty()) {
+                        Fragment current = getParentFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                        if (!(current instanceof SearchFragment)) {
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.nav_host_fragment, new SearchFragment())
+                                    .addToBackStack("search")
+                                    .commit();
+                        }
+                    } else {
+                        getParentFragmentManager().popBackStack("search", androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    }
+                }
+                @Override public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        sliderHandler.removeCallbacks(sliderRunnable);
     }
 
     private void setupRecyclerViews(View view) {
@@ -104,11 +120,9 @@ public class HomeFragment extends Fragment {
 
         categoryAdapter = new com.dekhi.dekhi.ui.playlist.CategoryAdapter(category -> {
             viewModel.setSearchQuery(category);
-            // SearchFragment will be opened by MainActivity's search listener if I trigger it properly
-            // Or I can open it manually
-            if (getActivity() != null) {
-                EditText etSearch = getActivity().findViewById(R.id.et_search);
-                if (etSearch != null) etSearch.setText(category);
+            // SearchFragment will be opened by HomeFragment's search listener logic
+            if (etSearchHome != null) {
+                etSearchHome.setText(category);
             }
         });
         RecyclerView rvCategories = view.findViewById(R.id.rv_categories);
@@ -153,28 +167,47 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void updateHero(View view, List<Channel> recent) {
+    private void loadLastChannelFromPrefs(View view) {
+        String name = prefs.getString(PREF_LAST_CHANNEL_NAME, null);
+        String logoUrl = prefs.getString(PREF_LAST_CHANNEL_LOGO, null);
+        if (name != null) {
+            updateHeroUI(view, name, logoUrl, true);
+            
+            // Reconstruct minimal channel to allow click before ViewModel loads
+            long id = prefs.getLong(PREF_LAST_CHANNEL_ID, -1);
+            String url = prefs.getString(PREF_LAST_CHANNEL_URL, null);
+            long playlistId = prefs.getLong(PREF_LAST_PLAYLIST_ID, -1);
+            
+            if (id != -1 && url != null) {
+                Channel minimalChannel = new Channel(playlistId, name, logoUrl, url, "");
+                minimalChannel.setId(id);
+                
+                view.findViewById(R.id.btn_hero_primary).setOnClickListener(v -> openPlayer(minimalChannel));
+            }
+        }
+    }
+
+    private void updateHeroUI(View view, String name, String logoUrl, boolean isRecent) {
         TextView tvLabel = view.findViewById(R.id.tv_hero_label);
         TextView tvTitle = view.findViewById(R.id.tv_hero_title);
         TextView tvSubtitle = view.findViewById(R.id.tv_hero_subtitle);
         MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
-//        MaterialButton btnSecondary = view.findViewById(R.id.btn_hero_secondary);
 
-        if (recent != null && !recent.isEmpty()) {
-            Channel mostRecent = recent.get(0);
+        if (isRecent) {
             tvLabel.setText("Recently Visited");
-            tvTitle.setText(mostRecent.getName());
+            tvTitle.setText(name);
             tvSubtitle.setText("Continue where you left off");
             btnPrimary.setText("Continue Watching");
-            btnPrimary.setOnClickListener(v -> openPlayer(mostRecent));
             
-//            btnSecondary.setVisibility(View.VISIBLE);
-//            btnSecondary.setText("Open Channel");
-//            btnSecondary.setOnClickListener(v -> openPlayer(mostRecent));
-
-            // When showing recent, we might want to hide the pager or update it
-            // For now, let's keep showing the pager background or maybe put the logo in it?
-            // Actually, let's just use the pager to show default images as background.
+            if (heroBackground != null) {
+                Glide.with(this)
+                        .load(logoUrl)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .error(R.mipmap.ic_launcher)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                        .into(heroBackground);
+            }
         } else {
             tvLabel.setText("Explore");
             tvTitle.setText("Explore IPTV Channels");
@@ -186,7 +219,35 @@ public class HomeFragment extends Fragment {
                     if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
                 }
             });
-//            btnSecondary.setVisibility(View.GONE);
+
+            if (heroBackground != null) {
+                heroBackground.setImageResource(R.mipmap.ic_launcher);
+            }
+        }
+    }
+
+    private void updateHero(View view, List<Channel> recent) {
+        if (recent != null && !recent.isEmpty()) {
+            Channel mostRecent = recent.get(0);
+            
+            // Save to prefs for next launch
+            prefs.edit()
+                .putString(PREF_LAST_CHANNEL_NAME, mostRecent.getName())
+                .putString(PREF_LAST_CHANNEL_LOGO, mostRecent.getLogoUrl())
+                .putLong(PREF_LAST_CHANNEL_ID, mostRecent.getId())
+                .putString(PREF_LAST_CHANNEL_URL, mostRecent.getStreamUrl())
+                .putLong(PREF_LAST_PLAYLIST_ID, mostRecent.getPlaylistId())
+                .apply();
+
+            updateHeroUI(view, mostRecent.getName(), mostRecent.getLogoUrl(), true);
+            
+            MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
+            btnPrimary.setOnClickListener(v -> openPlayer(mostRecent));
+        } else {
+            // Only revert to Explore if we don't have something in Prefs either
+            if (prefs != null && prefs.getString(PREF_LAST_CHANNEL_NAME, null) == null) {
+                updateHeroUI(view, null, null, false);
+            }
         }
     }
 }
