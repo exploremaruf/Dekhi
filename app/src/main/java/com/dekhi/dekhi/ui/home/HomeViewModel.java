@@ -65,6 +65,10 @@ public class HomeViewModel extends AndroidViewModel {
         return repository.getChannelsForPlaylist(playlistId);
     }
 
+    public LiveData<List<Channel>> getChannelsFiltered(long playlistId, String category, String query) {
+        return repository.getChannelsFiltered(playlistId, category, query);
+    }
+
     public LiveData<List<String>> getCategories(long playlistId) {
         return repository.getCategories(playlistId);
     }

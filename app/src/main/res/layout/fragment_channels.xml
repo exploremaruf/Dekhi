@@ -1,90 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cinematic_background"
-    android:clipToPadding="false"
-    android:paddingBottom="100dp">
+    android:orientation="vertical"
+    android:paddingTop="16dp">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/header_simple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="16dp">
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="12dp">
 
-        <RelativeLayout
-            android:id="@+id/header_simple"
+        <ImageButton
+            android:id="@+id/btn_back_simple"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_title_simple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/btn_back_simple"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="@color/white"
+            tools:text="Playlist Name" />
+    </RelativeLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search_input_layout_channels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        style="@style/Widget.Dekhi.TextInputLayout"
+        app:startIconDrawable="@android:drawable/ic_menu_search"
+        app:startIconTint="@color/cinematic_text_secondary">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_search_channels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="12dp">
+            android:hint="Search in this playlist..."
+            android:inputType="text"
+            android:textColor="@color/cinematic_text_primary"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:background="@color/transparent" />
 
-            <ImageButton
-                android:id="@+id/btn_back_simple"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_revert"
-                app:tint="@color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/tv_title_simple"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/btn_back_simple"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textColor="@color/white"
-                tools:text="Playlist Name" />
-        </RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_categories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_category" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/search_input_layout_channels"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp"
-            style="@style/Widget.Dekhi.TextInputLayout"
-            app:startIconDrawable="@android:drawable/ic_menu_search"
-            app:startIconTint="@color/cinematic_text_secondary">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_channels"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="1"
+        tools:listitem="@layout/item_channel" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_search_channels"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Search in this playlist..."
-                android:inputType="text"
-                android:textColor="@color/cinematic_text_primary"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:background="@color/transparent" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_categories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:orientation="horizontal"
-            android:paddingHorizontal="12dp"
-            android:paddingBottom="16dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_category" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_channels"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            android:paddingHorizontal="8dp"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="1"
-            tools:listitem="@layout/item_channel" />
-
-    </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+</LinearLayout>

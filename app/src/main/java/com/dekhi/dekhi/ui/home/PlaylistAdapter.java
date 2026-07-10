@@ -21,10 +21,16 @@ import java.util.Locale;
 public class PlaylistAdapter extends ListAdapter<Playlist, PlaylistAdapter.ViewHolder> {
 
     private final OnPlaylistClickListener listener;
+    private final int layoutId;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
 
     public PlaylistAdapter(OnPlaylistClickListener listener) {
+        this(R.layout.item_playlist, listener);
+    }
+
+    public PlaylistAdapter(int layoutId, OnPlaylistClickListener listener) {
         super(DIFF_CALLBACK);
+        this.layoutId = layoutId;
         this.listener = listener;
     }
 
@@ -45,7 +51,7 @@ public class PlaylistAdapter extends ListAdapter<Playlist, PlaylistAdapter.ViewH
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_playlist, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
         return new ViewHolder(view);
     }
 
@@ -55,13 +61,21 @@ public class PlaylistAdapter extends ListAdapter<Playlist, PlaylistAdapter.ViewH
         holder.tvName.setText(playlist.getName());
         
         String meta = playlist.getChannelCount() + " Channels • " + playlist.getGroupCount() + " Groups";
+        if (layoutId == R.layout.item_playlist_home) {
+            meta = playlist.getChannelCount() + " Channels";
+        }
         holder.tvMeta.setText(meta);
 
-        String updated = "Last updated: " + dateFormat.format(new Date(playlist.getLastImported()));
-        holder.tvUpdated.setText(updated);
+        if (holder.tvUpdated != null) {
+            String updated = "Last updated: " + dateFormat.format(new Date(playlist.getLastImported()));
+            holder.tvUpdated.setText(updated);
+        }
 
         holder.itemView.setOnClickListener(v -> listener.onPlaylistClick(playlist));
-        holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(playlist));
+        
+        if (holder.btnDelete != null) {
+            holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(playlist));
+        }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

@@ -22,6 +22,9 @@ public interface ChannelDao {
     @Query("SELECT * FROM channels WHERE playlistId = :playlistId")
     LiveData<List<Channel>> getChannelsByPlaylist(long playlistId);
 
+    @Query("SELECT * FROM channels WHERE playlistId = :playlistId AND (category = :category OR :category = 'All') AND (name LIKE :query OR :query = '') LIMIT 1000")
+    LiveData<List<Channel>> getChannelsFiltered(long playlistId, String category, String query);
+
     @Query("SELECT * FROM channels WHERE playlistId = :playlistId")
     List<Channel> getChannelsByPlaylistSync(long playlistId);
 
@@ -34,7 +37,7 @@ public interface ChannelDao {
     @Query("SELECT * FROM channels WHERE lastWatched > 0 ORDER BY lastWatched DESC LIMIT 20")
     LiveData<List<Channel>> getRecentChannels();
 
-    @Query("SELECT * FROM channels WHERE name LIKE :query OR category LIKE :query OR streamUrl LIKE :query")
+    @Query("SELECT * FROM channels WHERE name LIKE :query OR category LIKE :query OR streamUrl LIKE :query LIMIT 100")
     LiveData<List<Channel>> searchChannels(String query);
     
     @Query("SELECT DISTINCT category FROM channels WHERE playlistId = :playlistId")

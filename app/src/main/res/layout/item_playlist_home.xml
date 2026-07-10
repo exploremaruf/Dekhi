@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Dekhi.Card"
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@color/cinematic_divider"
+            android:padding="10dp"
+            android:src="@android:drawable/ic_menu_agenda"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_playlist_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="@color/white"
+            tools:text="Action Movies" />
+
+        <TextView
+            android:id="@+id/tv_playlist_meta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="@color/cinematic_text_secondary"
+            tools:text="1200 Channels" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
