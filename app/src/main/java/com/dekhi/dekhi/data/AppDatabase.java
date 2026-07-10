@@ -11,7 +11,7 @@ import com.dekhi.dekhi.data.dao.PlaylistDao;
 import com.dekhi.dekhi.data.entity.Channel;
 import com.dekhi.dekhi.data.entity.Playlist;
 
-@Database(entities = {Playlist.class, Channel.class}, version = 3, exportSchema = false)
+@Database(entities = {Playlist.class, Channel.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 

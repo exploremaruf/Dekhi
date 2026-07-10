@@ -45,6 +45,10 @@ public class PlaylistRepository {
         return channelDao.getChannelsByPlaylist(playlistId);
     }
 
+    public LiveData<List<Channel>> getChannelsFiltered(long playlistId, String category, String query) {
+        return channelDao.getChannelsFiltered(playlistId, category, "%" + query + "%");
+    }
+
     public LiveData<List<String>> getCategories(long playlistId) {
         return channelDao.getCategories(playlistId);
     }
@@ -115,28 +119,30 @@ public class PlaylistRepository {
 
                 if (inputStream == null) throw new Exception("Stream is null");
 
-                // 1. Parse Channels and Snippet first
-                M3UParser.ParseResult result = M3UParser.parse(inputStream, -1); // Temp ID
-                if (result.channels.isEmpty()) {
+                // 1. Insert Playlist into DB first to get ID
+                Playlist playlist = new Playlist(name, trimmedUrl, System.currentTimeMillis());
+                long playlistId = playlistDao.insert(playlist);
+
+                // 2. Parse and Insert Channels in batches
+                Log.d("IPTV_DEBUG", "DB: Starting batch import for playlist ID: " + playlistId);
+                M3UParser.ParseResult result = M3UParser.parse(inputStream, playlistId, batch -> {
+                    Log.d("IPTV_DEBUG", "DB: Inserting batch of " + batch.size() + " channels...");
+                    channelDao.insertAll(batch);
+                });
+
+                if (result.channelCount == 0) {
+                    playlistDao.delete(playlist);
                     throw new Exception("No valid channels found in this playlist.");
                 }
 
-                // 2. Insert Playlist into DB with snippet
-                Playlist playlist = new Playlist(name, trimmedUrl, System.currentTimeMillis());
+                // 3. Update Playlist with final metadata
+                playlist.setId(playlistId);
                 playlist.setChannelPreviewSnippet(result.previewSnippet);
-                playlist.setChannelCount(result.channels.size());
+                playlist.setChannelCount(result.channelCount);
                 playlist.setGroupCount(result.groupCount);
-                long playlistId = playlistDao.insert(playlist);
-
-                // 3. Update channel list with the real playlist ID
-                for (Channel channel : result.channels) {
-                    channel.setPlaylistId(playlistId);
-                }
-
-                // 4. Insert Channels into DB
-                Log.d("IPTV_DEBUG", "DB: Starting batch insert of " + result.channels.size() + " channels...");
-                channelDao.insertAll(result.channels);
-                Log.d("IPTV_DEBUG", "DB: Batch insert completed.");
+                playlistDao.update(playlist);
+                
+                Log.d("IPTV_DEBUG", "DB: Import completed. Total channels: " + result.channelCount);
 
                 new Handler(Looper.getMainLooper()).post(callback::onSuccess);
 

@@ -13,7 +13,10 @@ import androidx.room.PrimaryKey;
         childColumns = "playlistId",
         onDelete = ForeignKey.CASCADE
     ),
-    indices = {@Index("playlistId")}
+    indices = {
+        @Index("playlistId"),
+        @Index("category")
+    }
 )
 public class Channel {
     @PrimaryKey(autoGenerate = true)

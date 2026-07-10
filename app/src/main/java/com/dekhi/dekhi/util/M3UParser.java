@@ -15,24 +15,35 @@ public class M3UParser {
     private static final String TAG = "IPTV_DEBUG";
     private static final String EXTINF_PREFIX = "#EXTINF:";
     private static final String EXTGRP_PREFIX = "#EXTGRP:";
+    private static final int BATCH_SIZE = 1000;
+
+    // Pre-compiled patterns for performance and robustness
+    private static final Pattern LOGO_PATTERN = Pattern.compile("(?:tvg-logo|logo)=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
+    private static final Pattern GROUP_PATTERN = Pattern.compile("group-title=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
+    private static final Pattern NAME_PATTERN = Pattern.compile("tvg-name=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
+
+    public interface BatchListener {
+        void onBatchParsed(List<Channel> batch);
+    }
 
     public static class ParseResult {
-        public final List<Channel> channels;
         public final String previewSnippet;
         public final int groupCount;
+        public final int channelCount;
 
-        public ParseResult(List<Channel> channels, String previewSnippet, int groupCount) {
-            this.channels = channels;
+        public ParseResult(String previewSnippet, int groupCount, int channelCount) {
             this.previewSnippet = previewSnippet;
             this.groupCount = groupCount;
+            this.channelCount = channelCount;
         }
     }
 
-    public static ParseResult parse(InputStream inputStream, long playlistId) throws Exception {
-        Log.d(TAG, "Parser: Starting native parse process...");
-        List<Channel> channels = new ArrayList<>();
+    public static ParseResult parse(InputStream inputStream, long playlistId, BatchListener listener) throws Exception {
+        Log.d(TAG, "Parser: Starting optimized parse process...");
+        List<Channel> currentBatch = new ArrayList<>(BATCH_SIZE);
         List<String> firstNames = new ArrayList<>();
         java.util.Set<String> groups = new java.util.HashSet<>();
+        int totalChannels = 0;
         
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String firstLine = reader.readLine();
@@ -55,31 +66,39 @@ public class M3UParser {
                         currentName = line.substring(lastComma + 1).trim();
                     }
                     
-                    // Native Attribute Extraction
-                    currentLogo = extractAttribute(line, "tvg-logo");
-                    if (currentLogo.isEmpty()) currentLogo = extractAttribute(line, "logo");
-                    
-                    String groupAttr = extractAttribute(line, "group-title");
+                    // Optimized Attribute Extraction
+                    currentLogo = fastExtract(line, LOGO_PATTERN);
+                    String groupAttr = fastExtract(line, GROUP_PATTERN);
                     if (!groupAttr.isEmpty()) currentGroup = groupAttr;
                     
                     if (currentName.isEmpty()) {
-                        currentName = extractAttribute(line, "tvg-name");
+                        currentName = fastExtract(line, NAME_PATTERN);
                     }
                 } else if (line.startsWith(EXTGRP_PREFIX)) {
                     String group = line.substring(EXTGRP_PREFIX.length()).trim();
                     if (!group.isEmpty()) currentGroup = group;
                 } else if (!line.startsWith("#")) {
                     if (!line.isEmpty()) {
-                        String name = currentName.isEmpty() ? "Channel " + (channels.size() + 1) : currentName;
-                        channels.add(new Channel(playlistId, name, currentLogo, line, currentGroup));
+                        String name = currentName.isEmpty() ? "Channel " + (totalChannels + 1) : currentName;
+                        currentBatch.add(new Channel(playlistId, name, currentLogo, line, currentGroup));
                         groups.add(currentGroup);
                         
                         if (firstNames.size() < 5) firstNames.add(name);
+                        totalChannels++;
+
+                        if (currentBatch.size() >= BATCH_SIZE) {
+                            if (listener != null) listener.onBatchParsed(new ArrayList<>(currentBatch));
+                            currentBatch.clear();
+                        }
                     }
                     currentName = "";
                     currentLogo = "";
                     currentGroup = "Uncategorized";
                 }
+            }
+            
+            if (!currentBatch.isEmpty() && listener != null) {
+                listener.onBatchParsed(currentBatch);
             }
         }
 
@@ -88,14 +107,12 @@ public class M3UParser {
             snippet.append(firstNames.get(i));
             if (i < firstNames.size() - 1) snippet.append(", ");
         }
-        if (channels.size() > 5) snippet.append("...");
+        if (totalChannels > 5) snippet.append("...");
 
-        return new ParseResult(channels, snippet.toString(), groups.size());
+        return new ParseResult(snippet.toString(), groups.size(), totalChannels);
     }
 
-    private static String extractAttribute(String line, String attribute) {
-        String regex = attribute + "=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))";
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+    private static String fastExtract(String line, Pattern pattern) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
             if (matcher.group(1) != null) return matcher.group(1).trim();

@@ -32,6 +32,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel viewModel;
     private ChannelAdapter recentAdapter;
     private ChannelAdapter favoritesAdapter;
+    private PlaylistAdapter homePlaylistAdapter;
     private com.dekhi.dekhi.ui.playlist.CategoryAdapter categoryAdapter;
     private ImageView heroBackground;
     private EditText etSearchHome;
@@ -118,6 +119,22 @@ public class HomeFragment extends Fragment {
         RecyclerView rvFavorites = view.findViewById(R.id.rv_favorites);
         if (rvFavorites != null) rvFavorites.setAdapter(favoritesAdapter);
 
+        homePlaylistAdapter = new PlaylistAdapter(R.layout.item_playlist_home, new PlaylistAdapter.OnPlaylistClickListener() {
+            @Override
+            public void onPlaylistClick(com.dekhi.dekhi.data.entity.Playlist playlist) {
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.nav_host_fragment, com.dekhi.dekhi.ui.playlist.ChannelsFragment.newInstance(playlist.getId(), playlist.getName()))
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            public void onDeleteClick(com.dekhi.dekhi.data.entity.Playlist playlist) {}
+        });
+        RecyclerView rvHomePlaylists = view.findViewById(R.id.rv_home_playlists);
+        if (rvHomePlaylists != null) rvHomePlaylists.setAdapter(homePlaylistAdapter);
+
         categoryAdapter = new com.dekhi.dekhi.ui.playlist.CategoryAdapter(category -> {
             viewModel.setSearchQuery(category);
             // SearchFragment will be opened by HomeFragment's search listener logic
@@ -143,13 +160,11 @@ public class HomeFragment extends Fragment {
             recentAdapter.submitList(channels);
             updateHero(view, channels);
             view.findViewById(R.id.section_recent).setVisibility(channels != null && !channels.isEmpty() ? View.VISIBLE : View.GONE);
-            checkEmptyState(view);
         });
 
         viewModel.getFavorites().observe(getViewLifecycleOwner(), channels -> {
             favoritesAdapter.submitList(channels);
             view.findViewById(R.id.section_favorites).setVisibility(channels != null && !channels.isEmpty() ? View.VISIBLE : View.GONE);
-            checkEmptyState(view);
         });
 
         viewModel.getAllCategories().observe(getViewLifecycleOwner(), categories -> {
@@ -157,11 +172,10 @@ public class HomeFragment extends Fragment {
             view.findViewById(R.id.section_categories).setVisibility(categories != null && !categories.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
-        viewModel.getAllPlaylists().observe(getViewLifecycleOwner(), playlists -> checkEmptyState(view));
-    }
-
-    private void checkEmptyState(View view) {
         viewModel.getAllPlaylists().observe(getViewLifecycleOwner(), playlists -> {
+            homePlaylistAdapter.submitList(playlists);
+            view.findViewById(R.id.section_home_playlists).setVisibility(playlists != null && !playlists.isEmpty() ? View.VISIBLE : View.GONE);
+
             boolean noPlaylists = playlists == null || playlists.isEmpty();
             view.findViewById(R.id.empty_state).setVisibility(noPlaylists ? View.VISIBLE : View.GONE);
         });
