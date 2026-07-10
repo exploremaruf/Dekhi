@@ -23,7 +23,7 @@
             android:layout_height="80dp"
             android:background="@color/cinematic_divider"
             android:scaleType="centerInside"
-            android:src="@android:drawable/ic_menu_report_image"
+            android:src="@mipmap/ic_launcher"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
         <LinearLayout

@@ -7,80 +7,11 @@
     android:background="@color/cinematic_background"
     tools:context=".MainActivity">
 
-    <!-- Cinematic Header -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent"
-        app:elevation="0dp">
-
-        <LinearLayout
-            android:id="@+id/header_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="24dp"
-            android:paddingBottom="16dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tv_app_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dekhi"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    android:textColor="@color/cinematic_text_primary" />
-
-                <ImageButton
-                    android:id="@+id/btn_import_header"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_menu_add"
-                    app:tint="@color/white" />
-            </RelativeLayout>
-
-            <!-- Search bar styled like a button or simple input -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/search_input_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                style="@style/Widget.Dekhi.TextInputLayout"
-                app:startIconDrawable="@android:drawable/ic_menu_search"
-                app:startIconTint="@color/cinematic_text_secondary"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/cinematic_text_secondary">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_search"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Search Channels..."
-                    android:inputType="text"
-                    android:textColor="@color/cinematic_text_primary"
-                    android:textColorHint="@color/cinematic_text_secondary"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:background="@color/transparent" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <!-- Content Area -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent" />
 
     <!-- Minimalist Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

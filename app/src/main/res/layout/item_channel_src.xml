@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.Dekhi.Card"
-    android:layout_width="160dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:clickable="true"
@@ -13,15 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
+        android:padding="12dp"
         android:gravity="center">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_channel_logo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
             android:background="@color/cinematic_divider"
-            android:padding="12dp"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_launcher"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
@@ -30,13 +29,23 @@
             android:id="@+id/tv_channel_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:layout_marginTop="12dp"
             android:gravity="center"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textColor="@color/white"
-            tools:text="HBO HD" />
+            tools:text="HBO Movies HD" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="LIVE"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="@color/cinematic_error"
+            android:textStyle="bold"
+            android:letterSpacing="0.1" />
 
     </LinearLayout>
 

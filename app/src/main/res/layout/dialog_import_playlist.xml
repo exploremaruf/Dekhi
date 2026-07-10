@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="32dp"
-    android:background="@color/cinematic_surface">
+    android:background="@drawable/bg_dialog_transparent">
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,23 +19,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/Widget.Dekhi.TextInputLayout"
-        android:hint="@string/playlist_name"
         app:startIconDrawable="@android:drawable/ic_menu_edit"
-        app:startIconTint="@color/cinematic_text_secondary">
+        app:startIconTint="@color/cinematic_text_secondary"
+        app:boxBackgroundColor="@color/transparent"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_playlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Name your playlist"
+            android:textColorHint="@color/cinematic_text_secondary"
             android:inputType="textCapWords"
             android:paddingTop="18dp"
-            android:paddingBottom="18dp"
+            android:paddingBottom="8dp"
             android:textColor="@color/white"
-            android:background="@color/transparent"
-
-            />
+            android:background="@color/transparent" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cinematic_divider"
+        android:layout_marginHorizontal="4dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_url"
@@ -43,21 +52,32 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         style="@style/Widget.Dekhi.TextInputLayout"
-        android:hint="@string/playlist_url"
-        app:startIconDrawable="@android:drawable/ic_menu_share"
-        app:startIconTint="@color/cinematic_text_secondary">
+        app:startIconDrawable="@drawable/media3_icon_feed"
+        app:startIconTint="@color/cinematic_text_secondary"
+        app:boxBackgroundColor="@color/transparent"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_playlist_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Enter playlist URL"
+            android:textColorHint="@color/cinematic_text_secondary"
             android:inputType="textUri"
             android:paddingTop="18dp"
-            android:paddingBottom="18dp"
+            android:paddingBottom="8dp"
             android:textColor="@color/white"
             android:background="@color/transparent" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cinematic_divider"
+        android:layout_marginHorizontal="4dp" />
 
     <TextView
         android:layout_width="wrap_content"

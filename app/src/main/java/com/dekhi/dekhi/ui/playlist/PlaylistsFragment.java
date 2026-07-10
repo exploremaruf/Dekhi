@@ -109,6 +109,17 @@ public class PlaylistsFragment extends Fragment {
         setupObservers(view);
         
         view.findViewById(R.id.btn_import).setOnClickListener(v -> showImportDialog());
+
+        android.widget.EditText etSearch = view.findViewById(R.id.et_search_playlists);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    viewModel.setSearchQuery(s.toString().trim());
+                }
+                @Override public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
     }
 
 
@@ -186,6 +197,14 @@ public class PlaylistsFragment extends Fragment {
         });
 
         dialog.show();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            // Implement blur on Android 12+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                dialog.getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                dialog.getWindow().getAttributes().setBlurBehindRadius(30);
+            }
+        }
     }
 
     private void startImport(String name, String url) {
