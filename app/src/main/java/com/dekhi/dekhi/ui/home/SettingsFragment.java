@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dekhi.dekhi.R;
+import com.dekhi.dekhi.util.ThemeHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsFragment extends Fragment {
@@ -30,10 +31,25 @@ public class SettingsFragment extends Fragment {
         setupClickListeners(view);
     }
 
+    private void showThemeDialog() {
+        String[] themes = {"Light", "Dark", "System Default"};
+        int currentTheme = ThemeHelper.getSavedTheme(requireContext());
+        
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Choose Theme")
+                .setSingleChoiceItems(themes, currentTheme, (dialog, which) -> {
+                    ThemeHelper.saveTheme(requireContext(), which);
+                    dialog.dismiss();
+                    if (getActivity() != null) getActivity().recreate();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     private void setupClickListeners(View view) {
         View.OnClickListener listener = v -> Toast.makeText(requireContext(), "Feature coming soon", Toast.LENGTH_SHORT).show();
 
-        view.findViewById(R.id.setting_theme).setOnClickListener(listener);
+        view.findViewById(R.id.setting_theme).setOnClickListener(v -> showThemeDialog());
         view.findViewById(R.id.setting_accent).setOnClickListener(listener);
         view.findViewById(R.id.setting_dynamic).setOnClickListener(listener);
         view.findViewById(R.id.setting_player).setOnClickListener(listener);

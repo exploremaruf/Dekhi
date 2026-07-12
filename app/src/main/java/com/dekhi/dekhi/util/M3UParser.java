@@ -17,8 +17,7 @@ public class M3UParser {
     private static final String EXTGRP_PREFIX = "#EXTGRP:";
     private static final int BATCH_SIZE = 1000;
 
-    // Pre-compiled patterns for performance and robustness
-    private static final Pattern LOGO_PATTERN = Pattern.compile("(?:tvg-logo|logo)=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
+    private static final Pattern LOGO_PATTERN = Pattern.compile("(?:tvg-logo|logo|thumb|image)=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
     private static final Pattern GROUP_PATTERN = Pattern.compile("group-title=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
     private static final Pattern NAME_PATTERN = Pattern.compile("tvg-name=(?:\"([^\"]*)\"|'([^']*)'|([^\\s,]*))", Pattern.CASE_INSENSITIVE);
 
@@ -66,7 +65,6 @@ public class M3UParser {
                         currentName = line.substring(lastComma + 1).trim();
                     }
                     
-                    // Optimized Attribute Extraction
                     currentLogo = fastExtract(line, LOGO_PATTERN);
                     String groupAttr = fastExtract(line, GROUP_PATTERN);
                     if (!groupAttr.isEmpty()) currentGroup = groupAttr;
