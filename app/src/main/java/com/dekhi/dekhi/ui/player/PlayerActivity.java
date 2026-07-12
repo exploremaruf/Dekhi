@@ -262,22 +262,62 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setUseController(!isInPictureInPictureMode);
     }
 
+    private boolean playWhenReady = true;
+
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            if (player != null) player.pause();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            if (player != null) player.play();
+        }
+    };
+
+    private void requestAudioFocus() {
+        if (audioManager != null) {
+            audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
+    }
+
     @Override
-    protected void onPause() {
-        super.onPause();
-        if (player != null) player.pause();
+    protected void onStart() {
+        super.onStart();
+        requestAudioFocus();
+        if (player != null) {
+            player.setPlayWhenReady(playWhenReady);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (player != null) player.play();
+        hideSystemUI();
+        if (player != null) {
+            player.setPlayWhenReady(playWhenReady);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (player != null) {
+            playWhenReady = player.getPlayWhenReady();
+            player.pause();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (player != null) {
+            player.pause();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (player != null) {
+            playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
         }

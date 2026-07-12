@@ -19,6 +19,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Fragment homeFragment, playlistsFragment, favoritesFragment, settingsFragment;
+    private Fragment activeFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeHelper.applyTheme(this);
@@ -36,32 +39,55 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        if (savedInstanceState == null) {
+            homeFragment = new HomeFragment();
+            playlistsFragment = new com.dekhi.dekhi.ui.playlist.PlaylistsFragment();
+            favoritesFragment = new FavoritesFragment();
+            settingsFragment = new SettingsFragment();
+            activeFragment = homeFragment;
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.nav_host_fragment, settingsFragment, "4").hide(settingsFragment)
+                    .add(R.id.nav_host_fragment, favoritesFragment, "3").hide(favoritesFragment)
+                    .add(R.id.nav_host_fragment, playlistsFragment, "2").hide(playlistsFragment)
+                    .add(R.id.nav_host_fragment, homeFragment, "1")
+                    .commit();
+        } else {
+            homeFragment = getSupportFragmentManager().findFragmentByTag("1");
+            playlistsFragment = getSupportFragmentManager().findFragmentByTag("2");
+            favoritesFragment = getSupportFragmentManager().findFragmentByTag("3");
+            settingsFragment = getSupportFragmentManager().findFragmentByTag("4");
+            
+            int selectedId = navView.getSelectedItemId();
+            if (selectedId == R.id.nav_playlists) activeFragment = playlistsFragment;
+            else if (selectedId == R.id.nav_favorites) activeFragment = favoritesFragment;
+            else if (selectedId == R.id.nav_settings) activeFragment = settingsFragment;
+            else activeFragment = homeFragment;
+        }
+
         navView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
+            Fragment targetFragment = null;
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
+                targetFragment = homeFragment;
             } else if (itemId == R.id.nav_playlists) {
-                selectedFragment = new com.dekhi.dekhi.ui.playlist.PlaylistsFragment(); 
+                targetFragment = playlistsFragment;
             } else if (itemId == R.id.nav_favorites) {
-                selectedFragment = new FavoritesFragment();
+                targetFragment = favoritesFragment;
             } else if (itemId == R.id.nav_settings) {
-                selectedFragment = new SettingsFragment();
+                targetFragment = settingsFragment;
             }
 
-            if (selectedFragment != null) {
+            if (targetFragment != null && targetFragment != activeFragment) {
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .replace(R.id.nav_host_fragment, selectedFragment)
+                        .hide(activeFragment)
+                        .show(targetFragment)
                         .commit();
+                activeFragment = targetFragment;
+                return true;
             }
-            return true;
+            return false;
         });
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.nav_host_fragment, new HomeFragment())
-                    .commit();
-        }
     }
 }

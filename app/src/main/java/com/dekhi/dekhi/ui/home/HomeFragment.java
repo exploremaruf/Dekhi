@@ -137,7 +137,6 @@ public class HomeFragment extends Fragment {
 
         categoryAdapter = new com.dekhi.dekhi.ui.playlist.CategoryAdapter(category -> {
             viewModel.setSearchQuery(category);
-            // SearchFragment will be opened by HomeFragment's search listener logic
             if (etSearchHome != null) {
                 etSearchHome.setText(category);
             }
@@ -187,7 +186,6 @@ public class HomeFragment extends Fragment {
         if (name != null) {
             updateHeroUI(view, name, logoUrl, true);
             
-            // Reconstruct minimal channel to allow click before ViewModel loads
             long id = prefs.getLong(PREF_LAST_CHANNEL_ID, -1);
             String url = prefs.getString(PREF_LAST_CHANNEL_URL, null);
             long playlistId = prefs.getLong(PREF_LAST_PLAYLIST_ID, -1);
@@ -244,7 +242,6 @@ public class HomeFragment extends Fragment {
         if (recent != null && !recent.isEmpty()) {
             Channel mostRecent = recent.get(0);
             
-            // Save to prefs for next launch
             prefs.edit()
                 .putString(PREF_LAST_CHANNEL_NAME, mostRecent.getName())
                 .putString(PREF_LAST_CHANNEL_LOGO, mostRecent.getLogoUrl())
@@ -258,7 +255,6 @@ public class HomeFragment extends Fragment {
             MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
             btnPrimary.setOnClickListener(v -> openPlayer(mostRecent));
         } else {
-            // Only revert to Explore if we don't have something in Prefs either
             if (prefs != null && prefs.getString(PREF_LAST_CHANNEL_NAME, null) == null) {
                 updateHeroUI(view, null, null, false);
             }

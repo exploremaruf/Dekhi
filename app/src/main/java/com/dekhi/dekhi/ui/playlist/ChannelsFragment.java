@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModelProvider;
@@ -61,7 +63,7 @@ public class ChannelsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         View btnBack = view.findViewById(R.id.btn_back_simple);
         if (btnBack != null) {
@@ -101,13 +103,12 @@ public class ChannelsFragment extends Fragment {
             });
         }
 
-        // Combine Category and Search into one LiveData stream
-        androidx.lifecycle.LiveData<Pair<String, String>> filterState = new androidx.lifecycle.MediatorLiveData<>();
-        ((androidx.lifecycle.MediatorLiveData<Pair<String, String>>) filterState).addSource(currentCategory, cat -> 
-            ((androidx.lifecycle.MediatorLiveData<Pair<String, String>>) filterState).setValue(new Pair<>(cat, searchQuery.getValue()))
+        MediatorLiveData<Pair<String, String>> filterState = new MediatorLiveData<>();
+        filterState.addSource(currentCategory, cat -> 
+            filterState.setValue(new Pair<>(cat, searchQuery.getValue()))
         );
-        ((androidx.lifecycle.MediatorLiveData<Pair<String, String>>) filterState).addSource(searchQuery, q -> 
-            ((androidx.lifecycle.MediatorLiveData<Pair<String, String>>) filterState).setValue(new Pair<>(currentCategory.getValue(), q))
+        filterState.addSource(searchQuery, q -> 
+            filterState.setValue(new Pair<>(currentCategory.getValue(), q))
         );
 
         Transformations.switchMap(filterState, pair -> 
@@ -119,11 +120,5 @@ public class ChannelsFragment extends Fragment {
         viewModel.getCategories(playlistId).observe(getViewLifecycleOwner(), categories -> {
             categoryAdapter.setCategories(categories);
         });
-    }
-
-    private static class Pair<A, B> {
-        public final A first;
-        public final B second;
-        public Pair(A first, B second) { this.first = first; this.second = second; }
     }
 }

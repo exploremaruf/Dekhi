@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@color/transparent"
         app:elevation="0dp"
-        app:liftOnScroll="false"
-        >
+        app:liftOnScroll="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,8 +20,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
             android:paddingTop="50dp"
-            android:paddingBottom="16dp"
-            >
+            android:paddingBottom="16dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -76,7 +74,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Dynamic Hero Section -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/hero_card"
                 android:layout_width="match_parent"
@@ -154,14 +151,13 @@
                                 android:textColor="@color/white"
                                 app:icon="@android:drawable/ic_media_play"
                                 app:iconTint="@color/white"
-                                android:backgroundTint="@color/cinematic_indicator"/>
+                                android:backgroundTint="@color/cinematic_indicator" />
 
                         </LinearLayout>
                     </LinearLayout>
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Continue Watching (Recent) -->
             <LinearLayout
                 android:id="@+id/section_recent"
                 android:layout_width="match_parent"
@@ -190,7 +186,6 @@
                     tools:listitem="@layout/item_channel_compact" />
             </LinearLayout>
 
-            <!-- Favorites Section -->
             <LinearLayout
                 android:id="@+id/section_favorites"
                 android:layout_width="match_parent"
@@ -219,7 +214,6 @@
                     tools:listitem="@layout/item_channel_compact" />
             </LinearLayout>
 
-            <!-- Categories Section -->
             <LinearLayout
                 android:id="@+id/section_categories"
                 android:layout_width="match_parent"
@@ -248,7 +242,6 @@
                     tools:listitem="@layout/item_category" />
             </LinearLayout>
 
-            <!-- Playlists Section -->
             <LinearLayout
                 android:id="@+id/section_home_playlists"
                 android:layout_width="match_parent"
@@ -277,7 +270,6 @@
                     tools:listitem="@layout/item_playlist_home" />
             </LinearLayout>
 
-            <!-- Empty State -->
             <LinearLayout
                 android:id="@+id/empty_state"
                 android:layout_width="match_parent"

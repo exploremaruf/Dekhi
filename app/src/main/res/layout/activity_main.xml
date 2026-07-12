@@ -7,13 +7,11 @@
     android:background="@color/cinematic_background"
     tools:context=".MainActivity">
 
-    <!-- Content Area -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Minimalist Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
@@ -26,7 +24,6 @@
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
 
-    <!-- Thin Divider for Nav -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

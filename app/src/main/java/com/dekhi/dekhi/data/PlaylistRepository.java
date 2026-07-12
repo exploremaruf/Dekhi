@@ -33,7 +33,6 @@ public class PlaylistRepository {
         AppDatabase db = AppDatabase.getInstance(application);
         playlistDao = db.playlistDao();
         channelDao = db.channelDao();
-        // Dedicated thread pool for heavy parsing and network tasks
         executorService = Executors.newFixedThreadPool(4);
     }
 
@@ -113,17 +112,14 @@ public class PlaylistRepository {
                     Log.d("IPTV_DEBUG", "Network: Connected. Content Length=" + contentLength);
                     inputStream = connection.getInputStream();
                 } else {
-                    // Local URI support
                     inputStream = application.getContentResolver().openInputStream(Uri.parse(trimmedUrl));
                 }
 
                 if (inputStream == null) throw new Exception("Stream is null");
 
-                // 1. Insert Playlist into DB first to get ID
                 Playlist playlist = new Playlist(name, trimmedUrl, System.currentTimeMillis());
                 long playlistId = playlistDao.insert(playlist);
 
-                // 2. Parse and Insert Channels in batches
                 Log.d("IPTV_DEBUG", "DB: Starting batch import for playlist ID: " + playlistId);
                 M3UParser.ParseResult result = M3UParser.parse(inputStream, playlistId, batch -> {
                     Log.d("IPTV_DEBUG", "DB: Inserting batch of " + batch.size() + " channels...");
@@ -135,7 +131,6 @@ public class PlaylistRepository {
                     throw new Exception("No valid channels found in this playlist.");
                 }
 
-                // 3. Update Playlist with final metadata
                 playlist.setId(playlistId);
                 playlist.setChannelPreviewSnippet(result.previewSnippet);
                 playlist.setChannelCount(result.channelCount);
