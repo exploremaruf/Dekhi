@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 public class ThemeHelper {
     private static final String PREFS_NAME = "dekhi_prefs";
     private static final String KEY_THEME = "current_theme";
+    private static final String KEY_AMOLED = "amoled_mode";
+    private static final String KEY_DYNAMIC = "dynamic_colors";
 
     public static final int THEME_LIGHT = 0;
     public static final int THEME_DARK = 1;
@@ -37,5 +39,21 @@ public class ThemeHelper {
     public static int getSavedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getInt(KEY_THEME, THEME_SYSTEM);
+    }
+
+    public static boolean isAmoledMode(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_AMOLED, false);
+    }
+
+    public static void setAmoledMode(Context context, boolean enabled) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_AMOLED, enabled).apply();
+    }
+
+    public static boolean isDynamicColorsEnabled(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_DYNAMIC, false);
+    }
+
+    public static void setDynamicColorsEnabled(Context context, boolean enabled) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_DYNAMIC, enabled).apply();
     }
 }

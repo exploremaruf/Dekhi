@@ -13,11 +13,13 @@ public class Playlist {
     private String channelPreviewSnippet;
     private int channelCount;
     private int groupCount;
+    private boolean isPending;
 
     public Playlist(String name, String url, long lastImported) {
         this.name = name;
         this.url = url;
         this.lastImported = lastImported;
+        this.isPending = true;
     }
 
     public long getId() { return id; }
@@ -34,4 +36,6 @@ public class Playlist {
     public void setChannelCount(int channelCount) { this.channelCount = channelCount; }
     public int getGroupCount() { return groupCount; }
     public void setGroupCount(int groupCount) { this.groupCount = groupCount; }
+    public boolean isPending() { return isPending; }
+    public void setPending(boolean pending) { isPending = pending; }
 }

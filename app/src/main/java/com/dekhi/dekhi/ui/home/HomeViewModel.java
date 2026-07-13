@@ -16,7 +16,6 @@ public class HomeViewModel extends AndroidViewModel {
     private final LiveData<List<Playlist>> allPlaylists;
     private final LiveData<List<Channel>> recentChannels;
     
-    // Search state
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
     private final LiveData<List<Channel>> searchResults;
     private final LiveData<List<Playlist>> playlistSearchResults;
@@ -25,11 +24,9 @@ public class HomeViewModel extends AndroidViewModel {
         super(application);
         repository = new PlaylistRepository(application);
         
-        // These are backed by Room LiveData, so they auto-update when the database changes
         allPlaylists = repository.getAllPlaylists();
         recentChannels = repository.getRecent();
         
-        // Reactive search logic: triggers repository search whenever searchQuery changes
         searchResults = Transformations.switchMap(searchQuery, query -> {
             if (query == null || query.isEmpty()) {
                 return new MutableLiveData<>();
@@ -85,9 +82,8 @@ public class HomeViewModel extends AndroidViewModel {
         return searchResults;
     }
 
-    public void importPlaylist(String name, String url, PlaylistRepository.ImportCallback callback) {
-        // Trigger repository to fetch and parse on background thread
-        repository.importPlaylist(name, url, callback);
+    public void importPlaylist(String name, String url, boolean isLocalFile, PlaylistRepository.ImportCallback callback) {
+        repository.importPlaylist(name, url, isLocalFile, callback);
     }
 
     public void deletePlaylist(Playlist playlist) {

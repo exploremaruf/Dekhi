@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,16 +15,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dekhi.dekhi.R;
 import com.dekhi.dekhi.data.entity.Channel;
+import com.dekhi.dekhi.ui.base.NavigableFragment;
 import com.dekhi.dekhi.ui.player.PlayerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment extends Fragment implements NavigableFragment {
 
     private HomeViewModel viewModel;
     private ChannelAdapter adapter;
     private List<Channel> allFavorites = new ArrayList<>();
+    private RecyclerView recyclerView;
 
     @Nullable
     @Override
@@ -36,7 +39,7 @@ public class FavoritesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
-        RecyclerView rv = view.findViewById(R.id.rv_favorites);
+        recyclerView = view.findViewById(R.id.rv_favorites);
         adapter = new ChannelAdapter(R.layout.item_channel_src, channel -> {
             Intent intent = new Intent(requireContext(), PlayerActivity.class);
             intent.putExtra(PlayerActivity.EXTRA_URL, channel.getStreamUrl());
@@ -45,7 +48,7 @@ public class FavoritesFragment extends Fragment {
             intent.putExtra(PlayerActivity.EXTRA_PLAYLIST_ID, channel.getPlaylistId());
             startActivity(intent);
         });
-        rv.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
         viewModel.getFavorites().observe(getViewLifecycleOwner(), channels -> {
             allFavorites = channels;
@@ -61,6 +64,16 @@ public class FavoritesFragment extends Fragment {
                 }
                 @Override public void afterTextChanged(android.text.Editable s) {}
             });
+        }
+    }
+
+    @Override
+    public void onTabReselected() {
+        if (recyclerView == null) return;
+        if (recyclerView.canScrollVertically(-1)) {
+            recyclerView.smoothScrollToPosition(0);
+        } else {
+            Toast.makeText(getContext(), "Favorites are up to date", Toast.LENGTH_SHORT).show();
         }
     }
 

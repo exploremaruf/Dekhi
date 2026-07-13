@@ -3,43 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#66000000">
+    android:background="@color/transparent">
 
-    <!-- Top Bar -->
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#9908080A" />
+
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="32dp">
 
         <ImageButton
             android:id="@+id/btn_back"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/white" />
+            app:tint="@color/text_high_emph" />
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="@color/white"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_high_emph"
+            android:textSize="18sp"
             android:maxLines="1"
             android:ellipsize="end" />
 
         <ImageButton
             android:id="@+id/btn_favorite"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off"
-            app:tint="@color/white" />
+            app:tint="@color/text_high_emph" />
     </RelativeLayout>
 
-    <!-- Center Playback Controls -->
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,58 +56,58 @@
 
         <ImageButton
             android:id="@+id/btn_previous"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_previous"
-            app:tint="@color/white" />
+            app:tint="@color/text_high_emph" />
 
         <ImageButton
             android:id="@id/exo_play_pause"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginHorizontal="48dp"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginHorizontal="64dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
-            app:tint="@color/white" />
+            app:tint="@color/primary" />
 
         <ImageButton
             android:id="@+id/btn_next"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_next"
-            app:tint="@color/white" />
+            app:tint="@color/text_high_emph" />
     </LinearLayout>
 
-    <!-- Bottom Timeline -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="32dp">
 
         <androidx.media3.ui.DefaultTimeBar
             android:id="@id/exo_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:played_color="?attr/colorPrimary"
+            app:played_color="@color/primary"
             app:unplayed_color="#33FFFFFF"
-            app:scrubber_color="?attr/colorPrimary"
-            app:scrubber_enabled_size="10dp"
-            app:scrubber_dragged_size="12dp" />
+            app:scrubber_color="@color/primary"
+            app:scrubber_enabled_size="12dp"
+            app:scrubber_dragged_size="14dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="12dp">
 
             <TextView
                 android:id="@id/exo_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="@color/text_med_emph"
                 android:textSize="12sp" />
 
             <TextView
@@ -108,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:textColor="@color/white"
+                android:textColor="@color/text_med_emph"
                 android:textSize="12sp" />
         </RelativeLayout>
     </LinearLayout>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/transparent">
 
-    <!-- Top Bar -->
+
     <RelativeLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:background="@drawable/hero_gradient"
         android:rotation="180">
 
-        <!-- Correcting rotation for text/buttons -->
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <!-- Center Controls -->
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
             app:tint="@color/white" />
     </LinearLayout>
 
-    <!-- Bottom Bar (Progress) -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

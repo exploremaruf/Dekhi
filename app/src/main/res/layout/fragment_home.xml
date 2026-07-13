@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cinematic_background">
+    android:background="@color/surface_base">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/home_app_bar"
@@ -30,32 +30,38 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Dekhi"
-                    android:fontFamily="@font/alkatra"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
-                    android:textColor="@color/cinematic_text_primary" />
+                    android:textColor="@color/text_high_emph"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
             </RelativeLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Dekhi.TextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                app:boxBackgroundColor="@color/surface_elevated"
+                app:boxCornerRadiusBottomEnd="28dp"
+                app:boxCornerRadiusBottomStart="28dp"
+                app:boxCornerRadiusTopEnd="28dp"
+                app:boxCornerRadiusTopStart="28dp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
                 app:endIconMode="clear_text"
-                app:endIconTint="@color/cinematic_text_secondary"
+                app:endIconTint="@color/text_med_emph"
                 app:startIconDrawable="@android:drawable/ic_menu_search"
-                app:startIconTint="@color/cinematic_text_secondary">
+                app:startIconTint="@color/text_med_emph">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_search_home"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/transparent"
                     android:hint="Search Channels..."
                     android:inputType="text"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:textColor="@color/cinematic_text_primary"
-                    android:textColorHint="@color/cinematic_text_secondary" />
+                    android:textColor="@color/text_high_emph"
+                    android:textColorHint="@color/text_med_emph" />
 
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
@@ -66,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="100dp"
+        android:paddingBottom="120dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -78,10 +84,11 @@
                 android:id="@+id/hero_card"
                 android:layout_width="match_parent"
                 android:layout_height="380dp"
-                android:layout_margin="24dp"
+                android:layout_margin="16dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                app:cardElevation="4dp"
+                app:strokeWidth="0.5dp"
+                app:strokeColor="@color/stroke_divider">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -91,13 +98,13 @@
                         android:id="@+id/hero_image_background"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:alpha="0.4"
+                        android:alpha="0.6"
                         android:scaleType="centerCrop"
                         android:src="@mipmap/ic_launcher" />
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="250dp"
                         android:layout_gravity="bottom"
                         android:background="@drawable/hero_gradient" />
 
@@ -106,54 +113,53 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:orientation="vertical"
-                        android:padding="32dp">
+                        android:padding="24dp">
 
                         <TextView
                             android:id="@+id/tv_hero_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:letterSpacing="0.1"
-                            android:text="Explore"
+                            android:text="Recently Visited"
                             android:textAllCaps="true"
-                            android:textAppearance="?attr/textAppearanceLabelSmall"
-                            android:textColor="@color/cinematic_text_secondary" />
+                            android:textColor="@color/primary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
 
                         <TextView
                             android:id="@+id/tv_hero_title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Explore IPTV Channels"
-                            android:textAppearance="?attr/textAppearanceHeadlineLarge"
-                            android:textColor="@color/white" />
+                            android:text="No Recent Activity"
+                            android:textColor="@color/text_high_emph"
+                            android:textSize="28sp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="-0.02" />
 
                         <TextView
                             android:id="@+id/tv_hero_subtitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Discover channels and playlists to start watching."
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="@color/cinematic_text_secondary" />
+                            android:text="Continue where you left off"
+                            android:textColor="@color/text_med_emph"
+                            android:textSize="14sp" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_hero_primary"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="24dp"
-                            android:orientation="horizontal">
+                            android:text="Continue Watching"
+                            android:textColor="@color/surface_base"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            app:backgroundTint="@color/primary"
+                            app:cornerRadius="12dp"
+                            app:icon="@android:drawable/ic_media_play"
+                            app:iconTint="@color/surface_base" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_hero_primary"
-                                style="@style/Widget.Dekhi.Button.Primary"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Browse Channels"
-                                android:textColor="@color/white"
-                                app:icon="@android:drawable/ic_media_play"
-                                app:iconTint="@color/white"
-                                android:backgroundTint="@color/cinematic_indicator" />
-
-                        </LinearLayout>
                     </LinearLayout>
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -169,19 +175,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:text="Continue Watching"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/white" />
+                    android:layout_marginStart="24dp"
+                    android:text="Recent Channels"
+                    android:textColor="@color/text_high_emph"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_recent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="16dp"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="24dp"
+                    android:paddingHorizontal="16dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_channel_compact" />
             </LinearLayout>
@@ -190,26 +197,27 @@
                 android:id="@+id/section_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="40dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:text="Favorites"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/white" />
+                    android:layout_marginStart="24dp"
+                    android:text="My Favorites"
+                    android:textColor="@color/text_high_emph"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_favorites"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="16dp"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="24dp"
+                    android:paddingHorizontal="16dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_channel_compact" />
             </LinearLayout>
@@ -218,26 +226,27 @@
                 android:id="@+id/section_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="40dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:text="Explore Categories"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/white" />
+                    android:layout_marginStart="24dp"
+                    android:text="Popular Categories"
+                    android:textColor="@color/text_high_emph"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_categories"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="16dp"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="24dp"
+                    android:paddingHorizontal="16dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_category" />
             </LinearLayout>
@@ -246,26 +255,27 @@
                 android:id="@+id/section_home_playlists"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="40dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:text="Your Playlists"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/white" />
+                    android:layout_marginStart="24dp"
+                    android:text="Your Libraries"
+                    android:textColor="@color/text_high_emph"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_home_playlists"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="16dp"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="24dp"
+                    android:paddingHorizontal="16dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_playlist_home" />
             </LinearLayout>
@@ -274,27 +284,48 @@
                 android:id="@+id/empty_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
-                android:layout_marginBottom="64dp"
+                android:layout_marginTop="80dp"
+                android:layout_marginBottom="80dp"
                 android:gravity="center"
                 android:orientation="vertical"
+                android:paddingHorizontal="48dp"
                 android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:alpha="0.2" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Start by importing a playlist"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="@color/cinematic_text_secondary" />
+                    android:layout_marginTop="24dp"
+                    android:text="Your screen is quiet."
+                    android:textColor="@color/text_high_emph"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Drop an M3U link or select a local media file below to start the show."
+                    android:textColor="@color/text_med_emph"
+                    android:textSize="14sp"
+                    android:textAlignment="center" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_import_empty"
-                    style="@style/Widget.Dekhi.Button.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="32dp"
                     android:paddingHorizontal="32dp"
-                    android:text="Go to Playlists" />
+                    android:text="Import Media"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/primary"
+                    android:textColor="@color/surface_base" />
 
             </LinearLayout>
 
@@ -307,11 +338,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="85dp"
-        android:src="@drawable/add_ic"
-        app:tint="@color/white"
-        app:backgroundTint="@color/cinematic_indicator"
-        app:elevation="6dp" />
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="96dp"
+        android:src="@android:drawable/ic_input_add"
+        app:tint="@color/surface_base"
+        app:backgroundTint="@color/primary"
+        app:elevation="8dp"
+        app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

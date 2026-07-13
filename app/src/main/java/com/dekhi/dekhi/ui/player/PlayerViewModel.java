@@ -2,22 +2,54 @@ package com.dekhi.dekhi.ui.player;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+
 import com.dekhi.dekhi.data.PlaylistRepository;
 import com.dekhi.dekhi.data.entity.Channel;
 import java.util.List;
 
+@OptIn(markerClass = UnstableApi.class)
 public class PlayerViewModel extends AndroidViewModel {
     private final PlaylistRepository repository;
     private final MutableLiveData<List<Channel>> channelList = new MutableLiveData<>();
     private final MutableLiveData<Integer> currentIndex = new MutableLiveData<>(-1);
     private final MutableLiveData<Channel> currentChannel = new MutableLiveData<>();
+    private ExoPlayer player;
 
     public PlayerViewModel(@NonNull Application application) {
         super(application);
         repository = new PlaylistRepository(application);
+        setupPlayer(application);
+    }
+
+    private void setupPlayer(Application app) {
+        DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory()
+                .setUserAgent("DekhiPlayer/1.0")
+                .setAllowCrossProtocolRedirects(true);
+
+        player = new ExoPlayer.Builder(app)
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(dataSourceFactory))
+                .build();
+    }
+
+    public ExoPlayer getPlayer() {
+        return player;
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (player != null) {
+            player.release();
+            player = null;
+        }
     }
 
     public void loadPlaylist(long playlistId, long initialChannelId) {
