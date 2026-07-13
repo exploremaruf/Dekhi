@@ -16,7 +16,9 @@ import com.dekhi.dekhi.util.M3UParser;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,14 +74,28 @@ public class PlaylistRepository {
         return channelDao.getRecentChannels();
     }
 
-    public void importPlaylist(String name, String url, ImportCallback callback) {
+    public void importPlaylist(String name, String url, boolean isLocalFile, ImportCallback callback) {
         final String trimmedUrl = url.trim();
         executorService.execute(() -> {
             InputStream inputStream = null;
             HttpURLConnection connection = null;
             try {
-                if (trimmedUrl.startsWith("http")) {
+                if (isLocalFile) {
+                    if (!trimmedUrl.startsWith("content://")) {
+                        throw new Exception("Local import must use content:// URI");
+                    }
+                    inputStream = application.getContentResolver().openInputStream(Uri.parse(trimmedUrl));
+                } else {
+                    if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
+                        throw new Exception("Remote import must use http:// or https:// URL");
+                    }
+                    
                     URL requestUrl = new URL(trimmedUrl);
+                    
+                    if (isPrivateHost(requestUrl.getHost())) {
+                        throw new Exception("Insecure URL blocked: " + requestUrl.getHost());
+                    }
+
                     int redirects = 0;
                     boolean connected = false;
 
@@ -87,7 +103,7 @@ public class PlaylistRepository {
                         connection = (HttpURLConnection) requestUrl.openConnection();
                         connection.setConnectTimeout(20000);
                         connection.setReadTimeout(30000);
-                        connection.setInstanceFollowRedirects(true);
+                        connection.setInstanceFollowRedirects(false);
                         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
                         int status = connection.getResponseCode();
@@ -96,7 +112,18 @@ public class PlaylistRepository {
                         if (status >= 300 && status <= 308 && status != 304) {
                             String location = connection.getHeaderField("Location");
                             if (location == null) throw new Exception("Redirect with no location");
+                            
                             requestUrl = new URL(requestUrl, location);
+                            
+                            if (!requestUrl.getProtocol().equalsIgnoreCase("http") && 
+                                !requestUrl.getProtocol().equalsIgnoreCase("https")) {
+                                throw new Exception("Insecure redirect scheme: " + requestUrl.getProtocol());
+                            }
+                            
+                            if (isPrivateHost(requestUrl.getHost())) {
+                                throw new Exception("Insecure redirect blocked: " + requestUrl.getHost());
+                            }
+
                             connection.disconnect();
                             redirects++;
                             Log.d("IPTV_DEBUG", "Network: Redirecting to=" + location);
@@ -111,8 +138,6 @@ public class PlaylistRepository {
                     int contentLength = connection.getContentLength();
                     Log.d("IPTV_DEBUG", "Network: Connected. Content Length=" + contentLength);
                     inputStream = connection.getInputStream();
-                } else {
-                    inputStream = application.getContentResolver().openInputStream(Uri.parse(trimmedUrl));
                 }
 
                 if (inputStream == null) throw new Exception("Stream is null");
@@ -120,26 +145,33 @@ public class PlaylistRepository {
                 Playlist playlist = new Playlist(name, trimmedUrl, System.currentTimeMillis());
                 long playlistId = playlistDao.insert(playlist);
 
-                Log.d("IPTV_DEBUG", "DB: Starting batch import for playlist ID: " + playlistId);
-                M3UParser.ParseResult result = M3UParser.parse(inputStream, playlistId, batch -> {
-                    Log.d("IPTV_DEBUG", "DB: Inserting batch of " + batch.size() + " channels...");
-                    channelDao.insertAll(batch);
-                });
+                try {
+                    Log.d("IPTV_DEBUG", "DB: Starting batch import for playlist ID: " + playlistId);
+                    M3UParser.ParseResult result = M3UParser.parse(inputStream, playlistId, batch -> {
+                        Log.d("IPTV_DEBUG", "DB: Inserting batch of " + batch.size() + " channels...");
+                        channelDao.insertAll(batch);
+                    });
 
-                if (result.channelCount == 0) {
+                    if (result.channelCount == 0) {
+                        playlistDao.delete(playlist);
+                        throw new Exception("No valid channels found in this playlist.");
+                    }
+
+                    playlist.setId(playlistId);
+                    playlist.setChannelPreviewSnippet(result.previewSnippet);
+                    playlist.setChannelCount(result.channelCount);
+                    playlist.setGroupCount(result.groupCount);
+                    playlist.setPending(false);
+                    playlistDao.update(playlist);
+                    
+                    Log.d("IPTV_DEBUG", "DB: Import completed. Total channels: " + result.channelCount);
+                    new Handler(Looper.getMainLooper()).post(callback::onSuccess);
+
+                } catch (Exception e) {
+                    channelDao.deleteByPlaylistId(playlistId);
                     playlistDao.delete(playlist);
-                    throw new Exception("No valid channels found in this playlist.");
+                    throw e;
                 }
-
-                playlist.setId(playlistId);
-                playlist.setChannelPreviewSnippet(result.previewSnippet);
-                playlist.setChannelCount(result.channelCount);
-                playlist.setGroupCount(result.groupCount);
-                playlistDao.update(playlist);
-                
-                Log.d("IPTV_DEBUG", "DB: Import completed. Total channels: " + result.channelCount);
-
-                new Handler(Looper.getMainLooper()).post(callback::onSuccess);
 
             } catch (Exception e) {
                 Log.e(TAG, "Import failed", e);
@@ -163,6 +195,24 @@ public class PlaylistRepository {
 
     public void updateChannel(Channel channel) {
         executorService.execute(() -> channelDao.update(channel));
+    }
+
+    private boolean isPrivateHost(String host) {
+        if (host == null) return true;
+        try {
+            InetAddress[] addresses = InetAddress.getAllByName(host);
+            for (InetAddress address : addresses) {
+                if (address.isLoopbackAddress() || 
+                    address.isSiteLocalAddress() || 
+                    address.isLinkLocalAddress() || 
+                    address.isAnyLocalAddress()) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (UnknownHostException e) {
+            return true;
+        }
     }
 
     public void getChannelsByPlaylistSync(long playlistId, DataCallback<List<Channel>> callback) {

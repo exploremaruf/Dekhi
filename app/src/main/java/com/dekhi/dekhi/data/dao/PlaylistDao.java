@@ -22,7 +22,7 @@ public interface PlaylistDao {
     @Delete
     void delete(Playlist playlist);
 
-    @Query("SELECT * FROM playlists ORDER BY lastImported DESC")
+    @Query("SELECT * FROM playlists WHERE isPending = 0 ORDER BY lastImported DESC")
     LiveData<List<Playlist>> getAllPlaylists();
 
     @Query("SELECT * FROM playlists WHERE id = :id")

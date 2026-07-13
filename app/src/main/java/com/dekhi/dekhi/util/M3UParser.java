@@ -76,9 +76,9 @@ public class M3UParser {
                     String group = line.substring(EXTGRP_PREFIX.length()).trim();
                     if (!group.isEmpty()) currentGroup = group;
                 } else if (!line.startsWith("#")) {
-                    if (!line.isEmpty()) {
+                    if (!line.isEmpty() && isSafeUrl(line)) {
                         String name = currentName.isEmpty() ? "Channel " + (totalChannels + 1) : currentName;
-                        currentBatch.add(new Channel(playlistId, name, currentLogo, line, currentGroup));
+                        currentBatch.add(new Channel(playlistId, name, isSafeUrl(currentLogo) ? currentLogo : "", line, currentGroup));
                         groups.add(currentGroup);
                         
                         if (firstNames.size() < 5) firstNames.add(name);
@@ -108,6 +108,12 @@ public class M3UParser {
         if (totalChannels > 5) snippet.append("...");
 
         return new ParseResult(snippet.toString(), groups.size(), totalChannels);
+    }
+
+    private static boolean isSafeUrl(String url) {
+        if (url == null || url.isEmpty()) return false;
+        String lower = url.toLowerCase();
+        return lower.startsWith("http://") || lower.startsWith("https://") || lower.startsWith("content://");
     }
 
     private static String fastExtract(String line, Pattern pattern) {

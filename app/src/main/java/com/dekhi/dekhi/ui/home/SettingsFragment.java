@@ -12,11 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dekhi.dekhi.R;
+import com.dekhi.dekhi.ui.base.NavigableFragment;
 import com.dekhi.dekhi.util.ThemeHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements NavigableFragment {
     private HomeViewModel viewModel;
+    private View scrollView;
 
     @Nullable
     @Override
@@ -28,7 +31,38 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        scrollView = view.findViewById(R.id.settings_scroll_view);
         setupClickListeners(view);
+        setupSwitches(view);
+    }
+
+    @Override
+    public void onTabReselected() {
+        if (scrollView != null && scrollView.getScrollY() > 0) {
+            scrollView.scrollTo(0, 0);
+        } else {
+            Toast.makeText(getContext(), "Dekhi Settings v1.0", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setupSwitches(View view) {
+        MaterialSwitch amoledSwitch = view.findViewById(R.id.setting_amoled);
+        if (amoledSwitch != null) {
+            amoledSwitch.setChecked(ThemeHelper.isAmoledMode(requireContext()));
+            amoledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                ThemeHelper.setAmoledMode(requireContext(), isChecked);
+                if (getActivity() != null) getActivity().recreate();
+            });
+        }
+
+        MaterialSwitch dynamicSwitch = view.findViewById(R.id.setting_dynamic);
+        if (dynamicSwitch != null) {
+            dynamicSwitch.setChecked(ThemeHelper.isDynamicColorsEnabled(requireContext()));
+            dynamicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                ThemeHelper.setDynamicColorsEnabled(requireContext(), isChecked);
+                if (getActivity() != null) getActivity().recreate();
+            });
+        }
     }
 
     private void showThemeDialog() {
@@ -51,7 +85,6 @@ public class SettingsFragment extends Fragment {
 
         view.findViewById(R.id.setting_theme).setOnClickListener(v -> showThemeDialog());
         view.findViewById(R.id.setting_accent).setOnClickListener(listener);
-        view.findViewById(R.id.setting_dynamic).setOnClickListener(listener);
         view.findViewById(R.id.setting_player).setOnClickListener(listener);
         view.findViewById(R.id.setting_resume).setOnClickListener(listener);
         view.findViewById(R.id.setting_hw).setOnClickListener(listener);

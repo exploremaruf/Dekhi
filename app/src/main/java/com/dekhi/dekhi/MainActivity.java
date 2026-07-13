@@ -1,8 +1,8 @@
 package com.dekhi.dekhi;
 
 import android.os.Bundle;
-import android.view.View;
-
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
@@ -10,7 +10,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import com.dekhi.dekhi.ui.base.NavigableFragment;
 import com.dekhi.dekhi.ui.home.FavoritesFragment;
 import com.dekhi.dekhi.ui.home.HomeFragment;
 import com.dekhi.dekhi.ui.home.SettingsFragment;
@@ -21,17 +23,25 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment homeFragment, playlistsFragment, favoritesFragment, settingsFragment;
     private Fragment activeFragment;
+    private BottomNavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (ThemeHelper.isDynamicColorsEnabled(this)) {
+            com.google.android.material.color.DynamicColors.applyToActivitiesIfAvailable(this.getApplication());
+        }
         ThemeHelper.applyTheme(this);
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         
+        if (ThemeHelper.isAmoledMode(this)) {
+            getWindow().getDecorView().setBackgroundColor(android.graphics.Color.BLACK);
+        }
+        
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView navView = findViewById(R.id.bottom_navigation);
+        navView = findViewById(R.id.bottom_navigation);
         
         ViewCompat.setOnApplyWindowInsetsListener(navView, (v, insets) -> {
             Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
@@ -65,6 +75,11 @@ public class MainActivity extends AppCompatActivity {
             else activeFragment = homeFragment;
         }
 
+        setupNavigationListeners();
+        setupBackNavigation();
+    }
+
+    private void setupNavigationListeners() {
         navView.setOnItemSelectedListener(item -> {
             Fragment targetFragment = null;
             int itemId = item.getItemId();
@@ -89,5 +104,34 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        navView.setOnItemReselectedListener(item -> {
+            if (activeFragment instanceof NavigableFragment) {
+                ((NavigableFragment) activeFragment).onTabReselected();
+            }
+        });
+    }
+
+    private void setupBackNavigation() {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                FragmentManager fm = getSupportFragmentManager();
+
+                if (fm.getBackStackEntryCount() > 0) {
+                    fm.popBackStack();
+                    return;
+                }
+
+                if (navView.getSelectedItemId() != R.id.nav_home) {
+                    navView.setSelectedItemId(R.id.nav_home);
+                    return;
+                }
+
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 }

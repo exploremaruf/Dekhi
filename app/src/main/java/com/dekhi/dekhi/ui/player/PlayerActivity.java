@@ -4,32 +4,34 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter;
 import androidx.media3.ui.PlayerView;
 
 import com.dekhi.dekhi.R;
-import com.dekhi.dekhi.data.entity.Channel;
+import com.dekhi.dekhi.util.ThemeHelper;
 
 @OptIn(markerClass = UnstableApi.class)
 public class PlayerActivity extends AppCompatActivity {
@@ -41,7 +43,8 @@ public class PlayerActivity extends AppCompatActivity {
 
     private PlayerView playerView;
     private ExoPlayer player;
-    private ProgressBar pbLoading;
+    private View layoutBuffering;
+    private TextView tvBufferingTelemetry;
     private TextView tvGestureStatus;
     private AudioManager audioManager;
     private GestureDetector gestureDetector;
@@ -50,17 +53,45 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView tvTitle;
     
     private PlayerViewModel viewModel;
+    
+    private boolean doubleBackToExitPressedOnce = false;
+    private final Handler mBackHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mBackRunnable = () -> doubleBackToExitPressedOnce = false;
+
+    private boolean playWhenReady = true;
+    private final Handler mBufferingTimeoutHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mBufferingTimeoutRunnable = () -> {
+        if (player != null && player.getPlaybackState() == Player.STATE_BUFFERING) {
+            tvBufferingTelemetry.setText("Stream link is unresponsive. Try another channel?");
+        }
+    };
+
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            if (player != null) player.pause();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            if (player != null) player.play();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (ThemeHelper.isDynamicColorsEnabled(this)) {
+            com.google.android.material.color.DynamicColors.applyToActivityIfAvailable(this);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+        if (ThemeHelper.isAmoledMode(this)) {
+            getWindow().getDecorView().setBackgroundColor(android.graphics.Color.BLACK);
+            findViewById(R.id.player_view).setBackgroundColor(android.graphics.Color.BLACK);
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         viewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
 
         playerView = findViewById(R.id.player_view);
-        pbLoading = findViewById(R.id.pb_loading);
+        layoutBuffering = findViewById(R.id.layout_buffering);
+        tvBufferingTelemetry = findViewById(R.id.tv_buffering_telemetry);
         tvGestureStatus = findViewById(R.id.tv_gesture_status);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -131,20 +162,13 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void setupExoPlayer() {
-        DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory()
-                .setUserAgent("DekhiPlayer/1.0")
-                .setAllowCrossProtocolRedirects(true);
-
-        player = new ExoPlayer.Builder(this)
-                .setMediaSourceFactory(new DefaultMediaSourceFactory(dataSourceFactory))
-                .build();
-        
+        player = viewModel.getPlayer();
         playerView.setPlayer(player);
 
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
-                pbLoading.setVisibility(playbackState == Player.STATE_BUFFERING ? View.VISIBLE : View.GONE);
+                updateBufferingUI(playbackState);
             }
 
             @Override
@@ -155,9 +179,41 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
+    private void updateBufferingUI(int playbackState) {
+        if (playbackState == Player.STATE_BUFFERING) {
+            layoutBuffering.setVisibility(View.VISIBLE);
+            
+            mBufferingTimeoutHandler.removeCallbacks(mBufferingTimeoutRunnable);
+            mBufferingTimeoutHandler.postDelayed(mBufferingTimeoutRunnable, 15000);
+            
+            long bitrate = DefaultBandwidthMeter.getSingletonInstance(PlayerActivity.this).getBitrateEstimate();
+            if (bitrate > 0) {
+                double mbps = bitrate / 8000000.0;
+                if (mbps >= 5.0) {
+                    tvBufferingTelemetry.setText("Optimizing stream...");
+                } else if (mbps < 0.5) {
+                    tvBufferingTelemetry.setText("Slow network connection...");
+                } else {
+                    tvBufferingTelemetry.setText("Loading...");
+                }
+            } else {
+                tvBufferingTelemetry.setText("Connecting...");
+            }
+        } else {
+            layoutBuffering.setVisibility(View.GONE);
+            mBufferingTimeoutHandler.removeCallbacks(mBufferingTimeoutRunnable);
+        }
+    }
+
     private void playStream(String url, String name) {
         if (url == null) return;
         if (tvTitle != null) tvTitle.setText(name);
+
+        MediaItem currentItem = player.getCurrentMediaItem();
+        if (currentItem != null && currentItem.localConfiguration != null 
+                && url.equals(currentItem.localConfiguration.uri.toString())) {
+            return;
+        }
         
         MediaItem mediaItem = new MediaItem.Builder()
                 .setUri(Uri.parse(url))
@@ -170,7 +226,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void setupControlListeners() {
-        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null) btnBack.setOnClickListener(v -> onBackPressed());
         
         if (btnNext != null) {
             btnNext.setOnClickListener(v -> viewModel.playNext());
@@ -205,11 +261,26 @@ public class PlayerActivity extends AppCompatActivity {
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                if (e1 == null || e2 == null) return false;
+                
                 float deltaY = e1.getY() - e2.getY();
-                if (e1.getX() < playerView.getWidth() / 2f) {
-                    adjustBrightness(deltaY / playerView.getHeight());
+                float width = playerView.getWidth();
+                float height = playerView.getHeight();
+                
+                if (e1.getX() < width * 0.45f) {
+                    adjustBrightness(deltaY / height);
+                } else if (e1.getX() > width * 0.55f) {
+                    adjustVolume(deltaY / height);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (playerView.isControllerFullyVisible()) {
+                    playerView.hideController();
                 } else {
-                    adjustVolume(deltaY / playerView.getHeight());
+                    playerView.showController();
                 }
                 return true;
             }
@@ -220,14 +291,14 @@ public class PlayerActivity extends AppCompatActivity {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 tvGestureStatus.setVisibility(View.GONE);
             }
-            return false; // Return false to let PlayerView handle its own touch for controls
+            return true;
         });
     }
 
     private void adjustVolume(float percent) {
         int maxVol = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        int delta = (int) (percent * maxVol);
+        int delta = (int) (percent * maxVol * 1.5f);
         int newVol = Math.max(0, Math.min(maxVol, currentVol + delta));
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVol, 0);
         showGestureStatus("Volume: " + (newVol * 100 / maxVol) + "%");
@@ -237,7 +308,7 @@ public class PlayerActivity extends AppCompatActivity {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         float brightness = lp.screenBrightness;
         if (brightness < 0) brightness = 0.5f;
-        lp.screenBrightness = Math.max(0.01f, Math.min(1.0f, brightness + percent));
+        lp.screenBrightness = Math.max(0.01f, Math.min(1.0f, brightness + percent * 1.5f));
         getWindow().setAttributes(lp);
         showGestureStatus("Brightness: " + (int) (lp.screenBrightness * 100) + "%");
     }
@@ -245,32 +316,27 @@ public class PlayerActivity extends AppCompatActivity {
     private void showGestureStatus(String text) {
         tvGestureStatus.setText(text);
         tvGestureStatus.setVisibility(View.VISIBLE);
-        if (playerView != null) playerView.showController();
     }
 
     @Override
-    protected void onUserLeaveHint() {
-        super.onUserLeaveHint();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            enterPictureInPictureMode(new android.app.PictureInPictureParams.Builder().build());
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            cleanupBackHandler();
+            super.onBackPressed();
+            return;
         }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Tap Back once more to close stream", Toast.LENGTH_SHORT).show();
+
+        mBackHandler.postDelayed(mBackRunnable, 2000);
     }
 
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, android.content.res.Configuration newConfig) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        playerView.setUseController(!isInPictureInPictureMode);
-    }
-
-    private boolean playWhenReady = true;
-
-    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
-        if (focusChange == AudioManager.AUDIOFOCUS_LOSS || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-            if (player != null) player.pause();
-        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            if (player != null) player.play();
+    private void cleanupBackHandler() {
+        if (mBackHandler != null && mBackRunnable != null) {
+            mBackHandler.removeCallbacks(mBackRunnable);
         }
-    };
+    }
 
     private void requestAudioFocus() {
         if (audioManager != null) {
@@ -308,18 +374,41 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        cleanupBackHandler();
+        doubleBackToExitPressedOnce = false;
         if (player != null) {
             player.pause();
+            if (isFinishing()) {
+                player.stop();
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        cleanupBackHandler();
+        mBufferingTimeoutHandler.removeCallbacks(mBufferingTimeoutRunnable);
         if (player != null) {
             playWhenReady = player.getPlayWhenReady();
-            player.release();
+            playerView.setPlayer(null);
             player = null;
         }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        if (player != null && player.isPlaying()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                enterPictureInPictureMode(new android.app.PictureInPictureParams.Builder().build());
+            }
+        }
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, android.content.res.Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        playerView.setUseController(!isInPictureInPictureMode);
     }
 }

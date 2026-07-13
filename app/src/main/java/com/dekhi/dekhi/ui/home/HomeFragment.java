@@ -1,33 +1,38 @@
 package com.dekhi.dekhi.ui.home;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dekhi.dekhi.R;
 import com.dekhi.dekhi.data.entity.Channel;
+import com.dekhi.dekhi.ui.base.NavigableFragment;
 import com.dekhi.dekhi.ui.player.PlayerActivity;
+import com.dekhi.dekhi.util.DekhiImageLoader;
+import com.dekhi.dekhi.util.ImportHelper;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
-import android.os.Handler;
-import android.os.Looper;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements NavigableFragment {
 
     private HomeViewModel viewModel;
     private ChannelAdapter recentAdapter;
@@ -36,12 +41,39 @@ public class HomeFragment extends Fragment {
     private com.dekhi.dekhi.ui.playlist.CategoryAdapter categoryAdapter;
     private ImageView heroBackground;
     private EditText etSearchHome;
+    private NestedScrollView nestedScrollView;
+    
     private android.content.SharedPreferences prefs;
     private static final String PREF_LAST_CHANNEL_NAME = "last_channel_name";
     private static final String PREF_LAST_CHANNEL_LOGO = "last_channel_logo";
     private static final String PREF_LAST_CHANNEL_ID = "last_channel_id";
     private static final String PREF_LAST_CHANNEL_URL = "last_channel_url";
     private static final String PREF_LAST_PLAYLIST_ID = "last_playlist_id";
+
+    private ActivityResultLauncher<Intent> filePickerLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        filePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        if (uri != null) {
+                            try {
+                                requireContext().getContentResolver().takePersistableUriPermission(uri, 
+                                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            } catch (Exception e) {
+                                Log.w("IPTV_DEBUG", "Permission error: " + e.getMessage());
+                            }
+                            String name = ImportHelper.getFileNameFromUri(requireContext(), uri);
+                            ImportHelper.startImport(this, viewModel, name, uri.toString(), true, null);
+                        }
+                    }
+                }
+        );
+    }
 
     @Nullable
     @Override
@@ -55,30 +87,39 @@ public class HomeFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         prefs = requireContext().getSharedPreferences("dekhi_prefs", android.content.Context.MODE_PRIVATE);
 
+        nestedScrollView = view.findViewById(R.id.nestedScrollView);
         heroBackground = view.findViewById(R.id.hero_image_background);
         loadLastChannelFromPrefs(view);
 
         setupRecyclerViews(view);
         setupObservers(view);
         setupHomeTools(view);
-        
-        view.findViewById(R.id.btn_import_empty).setOnClickListener(v -> {
-            if (getActivity() != null) {
-                com.google.android.material.bottomnavigation.BottomNavigationView nav = getActivity().findViewById(R.id.bottom_navigation);
-                if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
-            }
-        });
+    }
+
+    @Override
+    public void onTabReselected() {
+        if (nestedScrollView == null) return;
+
+        if (nestedScrollView.getScrollY() > 0) {
+            nestedScrollView.smoothScrollTo(0, 0);
+        } else {
+            refreshData();
+        }
+    }
+
+    private void refreshData() {
+        Toast.makeText(getContext(), "Refreshing cinematic feed...", Toast.LENGTH_SHORT).show();
     }
 
     private void setupHomeTools(View view) {
         View fabImport = view.findViewById(R.id.fab_import);
         if (fabImport != null) {
-            fabImport.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    com.google.android.material.bottomnavigation.BottomNavigationView nav = getActivity().findViewById(R.id.bottom_navigation);
-                    if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
-                }
-            });
+            fabImport.setOnClickListener(v -> ImportHelper.showImportDialog(this, viewModel, filePickerLauncher, null));
+        }
+
+        View btnImportEmpty = view.findViewById(R.id.btn_import_empty);
+        if (btnImportEmpty != null) {
+            btnImportEmpty.setOnClickListener(v -> ImportHelper.showImportDialog(this, viewModel, filePickerLauncher, null));
         }
 
         etSearchHome = view.findViewById(R.id.et_search_home);
@@ -103,11 +144,6 @@ public class HomeFragment extends Fragment {
                 @Override public void afterTextChanged(android.text.Editable s) {}
             });
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     private void setupRecyclerViews(View view) {
@@ -203,37 +239,29 @@ public class HomeFragment extends Fragment {
         TextView tvLabel = view.findViewById(R.id.tv_hero_label);
         TextView tvTitle = view.findViewById(R.id.tv_hero_title);
         TextView tvSubtitle = view.findViewById(R.id.tv_hero_subtitle);
-        MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
+        com.google.android.material.button.MaterialButton btnPrimary = view.findViewById(R.id.btn_hero_primary);
 
         if (isRecent) {
             tvLabel.setText("Recently Visited");
+            tvLabel.setTextColor(requireContext().getColor(R.color.primary));
             tvTitle.setText(name);
             tvSubtitle.setText("Continue where you left off");
+            btnPrimary.setVisibility(View.VISIBLE);
             btnPrimary.setText("Continue Watching");
             
             if (heroBackground != null) {
-                Glide.with(this)
-                        .load(logoUrl)
-                        .placeholder(R.mipmap.ic_launcher)
-                        .error(R.mipmap.ic_launcher)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .centerCrop()
-                        .into(heroBackground);
+                DekhiImageLoader.loadThumbnail(requireContext(), logoUrl, heroBackground);
             }
         } else {
-            tvLabel.setText("Explore");
+            tvLabel.setText("Welcome to Dekhi");
+            tvLabel.setTextColor(requireContext().getColor(R.color.text_med_emph));
             tvTitle.setText("Explore IPTV Channels");
             tvSubtitle.setText("Discover channels and playlists to start watching.");
-            btnPrimary.setText("Browse Channels");
-            btnPrimary.setOnClickListener(v -> {
-                if (getActivity() != null) {
-                    com.google.android.material.bottomnavigation.BottomNavigationView nav = getActivity().findViewById(R.id.bottom_navigation);
-                    if (nav != null) nav.setSelectedItemId(R.id.nav_playlists);
-                }
-            });
+            btnPrimary.setVisibility(View.GONE);
 
             if (heroBackground != null) {
                 heroBackground.setImageResource(R.mipmap.ic_launcher);
+                heroBackground.setAlpha(0.2f);
             }
         }
     }

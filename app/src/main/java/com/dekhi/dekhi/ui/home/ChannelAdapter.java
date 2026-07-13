@@ -11,10 +11,9 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dekhi.dekhi.R;
 import com.dekhi.dekhi.data.entity.Channel;
+import com.dekhi.dekhi.util.DekhiImageLoader;
 
 public class ChannelAdapter extends ListAdapter<Channel, ChannelAdapter.ViewHolder> {
 
@@ -55,12 +54,7 @@ public class ChannelAdapter extends ListAdapter<Channel, ChannelAdapter.ViewHold
         holder.tvName.setText(channel.getName());
         
         if (holder.ivLogo != null) {
-            Glide.with(holder.itemView.getContext())
-                .load(channel.getLogoUrl())
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.ivLogo);
+            DekhiImageLoader.loadThumbnail(holder.itemView.getContext(), channel.getLogoUrl(), holder.ivLogo);
         }
 
         holder.itemView.setOnClickListener(v -> listener.onChannelClick(channel));

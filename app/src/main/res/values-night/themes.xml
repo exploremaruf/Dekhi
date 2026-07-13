@@ -1,18 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Dekhi" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Re-use the cinematic theme -->
-        <item name="android:windowBackground">@color/cinematic_background</item>
-        <item name="android:navigationBarColor">@color/cinematic_background</item>
-        <item name="android:statusBarColor">@color/cinematic_background</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="colorSecondaryContainer">@color/cinematic_indicator</item>
 
-        <item name="colorPrimary">@color/cinematic_accent</item>
+        <item name="android:windowBackground">@color/surface_base</item>
+        <item name="android:navigationBarColor">@color/surface_base</item>
+        <item name="android:statusBarColor">@color/surface_base</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorSecondaryContainer">@color/primary</item>
+
+        <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/black</item>
-        <item name="colorSurface">@color/cinematic_surface</item>
-        <item name="colorOnSurface">@color/cinematic_text_primary</item>
-        <item name="colorOnSurfaceVariant">@color/cinematic_text_secondary</item>
-        <item name="colorOutline">@color/cinematic_divider</item>
+        <item name="colorSurface">@color/surface_base</item>
+        <item name="colorOnSurface">@color/text_high_emph</item>
+        <item name="colorOnSurfaceVariant">@color/text_med_emph</item>
+        <item name="colorOutline">@color/stroke_divider</item>
 
         <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Dekhi.HeroTitle</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.Dekhi.SectionTitle</item>

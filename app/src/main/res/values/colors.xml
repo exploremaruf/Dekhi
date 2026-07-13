@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Cinematic Dark Theme - Deep Black & White System -->
-    <color name="cinematic_background">#000000</color>
-    <color name="cinematic_surface">#1C1C1E</color>
+
+    <color name="primary">#00D1FF</color>
+    <color name="surface_base">#08080A</color>
+    <color name="surface_elevated">#161618</color>
+    <color name="stroke_divider">#2A2A2E</color>
+    <color name="text_high_emph">#FFFFFF</color>
+    <color name="text_med_emph">#A0A0A5</color>
+
+    <color name="cinematic_background">#08080A</color>
+    <color name="cinematic_surface">#161618</color>
     <color name="cinematic_text_primary">#FFFFFF</color>
-    <color name="cinematic_text_secondary">#A1A1AA</color>
-    <color name="cinematic_accent">#FFFFFF</color>
+    <color name="cinematic_text_secondary">#A0A0A5</color>
+    <color name="cinematic_accent">#00D1FF</color>
+    <color name="cinematic_divider">#2A2A2E</color>
 
-    <!-- Semantic Colors -->
+
+    <color name="cinematic_indicator">#00D1FF</color>
     <color name="cinematic_error">#FF453A</color>
-    <color name="cinematic_success">#30D158</color>
-    <color name="cinematic_indicator">#1E88E5</color>
-    <color name="cinematic_divider">#2C2C2E</color>
+    <color name="glass_overlay">#B91C1C1E</color>
 
-    <!-- Shared Utils -->
+
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
-    <color name="glass_overlay">#B91C1C1E</color>
-    <color name="glass_overlay_light">#4DFFFFFF</color>
 </resources>
