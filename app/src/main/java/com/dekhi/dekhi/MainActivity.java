@@ -1,6 +1,7 @@
 package com.dekhi.dekhi;
 
 import android.os.Bundle;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG_HOME = "1";
+    private static final String TAG_PLAYLISTS = "2";
+    private static final String TAG_FAVORITES = "3";
+    private static final String TAG_SETTINGS = "4";
+
     private Fragment homeFragment, playlistsFragment, favoritesFragment, settingsFragment;
     private Fragment activeFragment;
     private BottomNavigationView navView;
@@ -33,16 +39,16 @@ public class MainActivity extends AppCompatActivity {
         ThemeHelper.applyTheme(this);
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-        
+
         if (ThemeHelper.isAmoledMode(this)) {
             getWindow().getDecorView().setBackgroundColor(android.graphics.Color.BLACK);
         }
-        
+
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_main);
 
         navView = findViewById(R.id.bottom_navigation);
-        
+
         ViewCompat.setOnApplyWindowInsetsListener(navView, (v, insets) -> {
             Insets navBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
             v.setPadding(0, 0, 0, navBarInsets.bottom);
@@ -57,17 +63,17 @@ public class MainActivity extends AppCompatActivity {
             activeFragment = homeFragment;
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.nav_host_fragment, settingsFragment, "4").hide(settingsFragment)
-                    .add(R.id.nav_host_fragment, favoritesFragment, "3").hide(favoritesFragment)
-                    .add(R.id.nav_host_fragment, playlistsFragment, "2").hide(playlistsFragment)
-                    .add(R.id.nav_host_fragment, homeFragment, "1")
+                    .add(R.id.nav_host_fragment, settingsFragment, TAG_SETTINGS).hide(settingsFragment)
+                    .add(R.id.nav_host_fragment, favoritesFragment, TAG_FAVORITES).hide(favoritesFragment)
+                    .add(R.id.nav_host_fragment, playlistsFragment, TAG_PLAYLISTS).hide(playlistsFragment)
+                    .add(R.id.nav_host_fragment, homeFragment, TAG_HOME)
                     .commit();
         } else {
-            homeFragment = getSupportFragmentManager().findFragmentByTag("1");
-            playlistsFragment = getSupportFragmentManager().findFragmentByTag("2");
-            favoritesFragment = getSupportFragmentManager().findFragmentByTag("3");
-            settingsFragment = getSupportFragmentManager().findFragmentByTag("4");
-            
+            homeFragment = getSupportFragmentManager().findFragmentByTag(TAG_HOME);
+            playlistsFragment = getSupportFragmentManager().findFragmentByTag(TAG_PLAYLISTS);
+            favoritesFragment = getSupportFragmentManager().findFragmentByTag(TAG_FAVORITES);
+            settingsFragment = getSupportFragmentManager().findFragmentByTag(TAG_SETTINGS);
+
             int selectedId = navView.getSelectedItemId();
             if (selectedId == R.id.nav_playlists) activeFragment = playlistsFragment;
             else if (selectedId == R.id.nav_favorites) activeFragment = favoritesFragment;
@@ -81,17 +87,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupNavigationListeners() {
         navView.setOnItemSelectedListener(item -> {
-            Fragment targetFragment = null;
+            Fragment targetFragment;
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_home) {
-                targetFragment = homeFragment;
-            } else if (itemId == R.id.nav_playlists) {
-                targetFragment = playlistsFragment;
-            } else if (itemId == R.id.nav_favorites) {
-                targetFragment = favoritesFragment;
-            } else if (itemId == R.id.nav_settings) {
-                targetFragment = settingsFragment;
-            }
+            
+            if (itemId == R.id.nav_home) targetFragment = homeFragment;
+            else if (itemId == R.id.nav_playlists) targetFragment = playlistsFragment;
+            else if (itemId == R.id.nav_favorites) targetFragment = favoritesFragment;
+            else if (itemId == R.id.nav_settings) targetFragment = settingsFragment;
+            else return false;
 
             if (targetFragment != null && targetFragment != activeFragment) {
                 getSupportFragmentManager().beginTransaction()

@@ -26,4 +26,12 @@
     <string name="no_streams_found">No streams found</string>
     <string name="import_m3u">Import M3U</string>
     <string name="live_tag">LIVE</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_hero_thumbnail">Featured channel thumbnail</string>
+    <string name="cd_empty_state_icon">Empty state icon</string>
+    <string name="cd_import_playlist">Import playlist</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_favorite">Toggle favorite</string>
+    <string name="cd_prev">Previous channel</string>
+    <string name="cd_next">Next channel</string>
 </resources>
