@@ -55,7 +55,12 @@ public class M3UParser {
             String currentLogo = "";
             String currentGroup = "Uncategorized";
 
+            // Limit line length to prevent memory exhaustion attacks
+            final int MAX_LINE_LENGTH = 4096;
+
             while ((line = reader.readLine()) != null) {
+                if (line.length() > MAX_LINE_LENGTH) continue;
+
                 line = line.trim();
                 if (line.isEmpty()) continue;
 

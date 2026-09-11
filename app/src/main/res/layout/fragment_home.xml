@@ -50,7 +50,8 @@
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/text_med_emph"
                 app:startIconDrawable="@android:drawable/ic_menu_search"
-                app:startIconTint="@color/text_med_emph">
+                app:startIconTint="@color/text_med_emph"
+                app:startIconContentDescription="@string/cd_search">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_search_home"
@@ -61,7 +62,8 @@
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:textColor="@color/text_high_emph"
-                    android:textColorHint="@color/text_med_emph" />
+                    android:textColorHint="@color/text_med_emph"
+                    android:importantForAccessibility="yes" />
 
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
@@ -100,7 +102,8 @@
                         android:layout_height="match_parent"
                         android:alpha="0.6"
                         android:scaleType="centerCrop"
-                        android:src="@mipmap/ic_launcher" />
+                        android:src="@mipmap/ic_launcher"
+                        android:contentDescription="@string/cd_hero_thumbnail" />
 
                     <View
                         android:layout_width="match_parent"
@@ -295,7 +298,8 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:src="@mipmap/ic_launcher"
-                    android:alpha="0.2" />
+                    android:alpha="0.2"
+                    android:contentDescription="@string/cd_empty_state_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -341,6 +345,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="96dp"
         android:src="@android:drawable/ic_input_add"
+        android:contentDescription="@string/cd_import_playlist"
         app:tint="@color/surface_base"
         app:backgroundTint="@color/primary"
         app:elevation="8dp"

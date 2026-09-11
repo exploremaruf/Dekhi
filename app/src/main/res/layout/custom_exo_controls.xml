@@ -23,6 +23,7 @@
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="@string/cd_back"
             app:tint="@color/text_high_emph" />
 
         <TextView
@@ -43,6 +44,7 @@
             android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off"
+            android:contentDescription="@string/cd_favorite"
             app:tint="@color/text_high_emph" />
     </RelativeLayout>
 
@@ -60,6 +62,7 @@
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_previous"
+            android:contentDescription="@string/cd_prev"
             app:tint="@color/text_high_emph" />
 
         <ImageButton
@@ -77,6 +80,7 @@
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_next"
+            android:contentDescription="@string/cd_next"
             app:tint="@color/text_high_emph" />
     </LinearLayout>
 

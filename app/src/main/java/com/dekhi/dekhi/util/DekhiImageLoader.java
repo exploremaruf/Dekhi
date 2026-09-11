@@ -9,6 +9,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.dekhi.dekhi.R;
 
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
 public class DekhiImageLoader {
 
     private static final RequestOptions BASE_OPTIONS = new RequestOptions()
@@ -25,6 +27,7 @@ public class DekhiImageLoader {
         Glide.with(context)
                 .load(url)
                 .apply(BASE_OPTIONS)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .circleCrop()
                 .into(imageView);
     }
@@ -38,6 +41,7 @@ public class DekhiImageLoader {
         Glide.with(context)
                 .load(url)
                 .apply(BASE_OPTIONS)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .centerCrop()
                 .into(imageView);
     }
